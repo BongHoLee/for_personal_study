@@ -1,6 +1,7 @@
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class GameTest {
@@ -40,15 +41,32 @@ public class GameTest {
         assertThat(game.getScore()).isEqualTo(frames);
     }
 
+    private void rollSpare() {
+        game.roll(5);
+        game.roll(5);
+    }
+
     @Test
     public void oneSpare() {
-        game.roll(5);
-        game.roll(5);
+        rollSpare();
         game.roll(3);
         rollMany(17, 0);
         assertThat(game.getScore()).isEqualTo(16);
     }
 
+    @Test
+    public void oneStrike() {
+        game.roll(10);
+        game.roll(5);
+        game.roll(3);
+        rollMany(16, 0);
+        assertThat(game.getScore()).isEqualTo(26);
+    }
 
+    @Test
+    public void perfectGame() {
+        rollMany(10, 10);
+        assertThat(game.getScore()).isEqualTo(300);
+    }
 
 }
