@@ -1,8 +1,20 @@
+import buildutils.OfflineMavenRepository
+buildscript {
+    repositories {
+        maven {
+            url './dependencies/'
+        }
+
+        mavenLocal()
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '2.6.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'maven-publish'
+    id 'groovy'
 }
 
 group = 'io.security'
@@ -16,8 +28,15 @@ configurations {
     }
 }
 
+
+
 repositories {
+    mavenLocal()
     mavenCentral()
+
+    maven {
+        url './dependencies/'
+    }
 }
 
 dependencies {
@@ -64,35 +83,10 @@ task sourceJar(type: Jar) {
 }
 
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            url("/Users/bongholee/tempLib")
-        }
-    }
+task offlineDependencies (type:OfflineMavenRepository) {
+    repoDir = new File(project.projectDir, 'dependencies/')
 }
 
-configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.eachWithIndex { resolvedArtifact, n ->
-    println resolvedArtifact
-
-    project.publishing {
-        publications {
-            "maven${n}"(MavenPublication) {
-                artifact(resolvedArtifact.file) {
-                    groupId = resolvedArtifact.moduleVersion.id.group
-                    artifactId = resolvedArtifact.moduleVersion.id.name
-                    version = resolvedArtifact.moduleVersion.id.version
-                    classifier = resolvedArtifact.classifier
-                }
-            }
-        }
-    }
-}
 
 
 
