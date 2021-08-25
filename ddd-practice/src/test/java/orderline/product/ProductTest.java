@@ -6,6 +6,5 @@ public class ProductTest {
 
     @Test
     void createTest() {
-        new Product();
     }
 }
