@@ -15,7 +15,8 @@ public class Tel {
             throw new IllegalArgumentException("Not Valid Tel");
     }
 
-    public String getTel() {
+    @Override
+    public String toString() {
         return tel;
     }
 }

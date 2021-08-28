@@ -30,8 +30,7 @@ public class Price {
     }
 
     public Price sumWith(Price target) {
-        long originValue = this.value;
         long targetValue = target.value();
-        return of(originValue + targetValue);
+        return of(this.value + targetValue);
     }
 }

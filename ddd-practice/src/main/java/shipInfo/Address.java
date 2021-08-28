@@ -14,4 +14,9 @@ public class Address {
         if (isNull(address) || address.isEmpty())
             throw new IllegalArgumentException("Not Valid Address");
     }
+
+    @Override
+    public String toString() {
+        return address;
+    }
 }
