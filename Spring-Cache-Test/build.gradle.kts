@@ -21,8 +21,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springframework.session:spring-session-core")
-    runtimeOnly("com.h2database:h2")
+
+    // for test code
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    // for DB
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    runtimeOnly("com.h2database:h2:1.4.199")
 
     // spring cache
     implementation("org.springframework.boot:spring-boot-starter-cache:2.5.1")
