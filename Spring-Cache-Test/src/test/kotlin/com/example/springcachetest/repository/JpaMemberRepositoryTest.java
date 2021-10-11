@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,7 +43,19 @@ class JpaMemberRepositoryTest {
     }
 
     @Test
+    @DisplayName("유저 이름과 id 일치 여부 테스트")
     void findByName() {
+        Member member = memberRepository.findByName("lee").get();
+
+        assertThat(member.getId()).isEqualTo(102);
+    }
+
+    @Test
+    @DisplayName("유저 취미와 ID 일치 여부 테스트")
+    void findByHobby() {
+
+        List<Member> members = memberRepository.findByHobby("soccer");
+        assertThat(members).anyMatch(each -> each.getId() == 100);
     }
 
     @Test

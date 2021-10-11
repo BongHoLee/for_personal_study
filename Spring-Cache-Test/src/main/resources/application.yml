@@ -8,4 +8,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+  cache:
+   jcache:
+     config: classpath:ehcache.xml
 
