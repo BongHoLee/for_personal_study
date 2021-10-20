@@ -9,6 +9,8 @@ public class Member {
     @Id
     private Long id;
     private String name;
+    private String hobby;
+
 
     public Long getId() {
         return id;
@@ -24,5 +26,13 @@ public class Member {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getHobby() {
+        return hobby;
+    }
+
+    public void setHobby(String hobby) {
+        this.hobby = hobby;
     }
 }

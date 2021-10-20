@@ -36,6 +36,16 @@ public class JpaMemberRepository implements MemberRepository{
     }
 
     @Override
+    public List<Member> findByHobby(String hobby) {
+        List<Member> memberList = em.createQuery(
+                "select m from Member m where m.hobby = :hobby",
+                Member.class
+        ).setParameter("hobby", hobby).getResultList();
+
+        return memberList;
+    }
+
+    @Override
     public List<Member> findAll() {
         return em.createQuery("select m from Member m", Member.class).getResultList();
     }
