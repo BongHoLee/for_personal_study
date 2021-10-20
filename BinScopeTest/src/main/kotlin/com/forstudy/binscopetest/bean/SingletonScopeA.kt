@@ -7,6 +7,8 @@ import javax.annotation.PreDestroy
 @Component
 class SingletonScopeA(val prototypeBean: PrototypeScope) {
 
+    fun logic(): String = prototypeBean.uuid ?: ""
+
     @PostConstruct
     fun init() {
         println("Singleton Created : $this")
