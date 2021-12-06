@@ -11,8 +11,10 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.4.5'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.hamcrest:hamcrest:2.1'
 }
 
 test {
