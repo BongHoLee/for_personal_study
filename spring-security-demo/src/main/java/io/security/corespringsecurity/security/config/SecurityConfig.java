@@ -1,5 +1,7 @@
-package io.security.corespringsecurity.config;
+package io.security.corespringsecurity.security.config;
 
+import io.security.corespringsecurity.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -16,23 +19,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
                             // 이 AuthenticationManagerBuilder가 global(Bean) AuthenticationManager를 만듦
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
+    // 직접 구현한 userDetailsService 구현체를 인증에 사용하도록 설정
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        // 패스워드는 암호화된 방식으로 해야하는데 이를 제공하는 API가 PasswordEncoder
-        String password = passwordEncoder().encode("1111");
-
-        // In Memory 방식으로 사용자 생성한다.
-        // 테스트 할 때 좋을 듯?
-        // 각 유저에게 롤을 할당한다.
-        auth.inMemoryAuthentication().withUser("user").password(password).roles("USER");
-        auth.inMemoryAuthentication().withUser("manager").password(password).roles("USER", "MANAGER");
-        auth.inMemoryAuthentication().withUser("admin").password(password).roles("USER", "MANAGER", "ADMIN");
+        auth.userDetailsService(userDetailsService);
     }
 
     @Override
