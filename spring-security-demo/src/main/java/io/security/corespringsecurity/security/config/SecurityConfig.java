@@ -1,10 +1,11 @@
 package io.security.corespringsecurity.security.config;
 
-import io.security.corespringsecurity.repository.UserRepository;
+import io.security.corespringsecurity.security.provider.CustomAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -22,6 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -30,7 +32,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // 직접 구현한 userDetailsService 구현체를 인증에 사용하도록 설정
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+
+        // 이제 AuthenticationProvider에서 UserDetailsService를 사용하므로 필요 없음
+//        auth.userDetailsService(userDetailsService);
+
+        auth.authenticationProvider(authenticationProvider());
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+
+        // 직접 구현한 CustomAuthenticationProvider를 Bean으로 생성.
+        return new CustomAuthenticationProvider(userDetailsService, passwordEncoder());
     }
 
     @Override
