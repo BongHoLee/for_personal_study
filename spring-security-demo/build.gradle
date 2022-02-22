@@ -35,7 +35,7 @@ dependencies {
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    runtimeOnly 'org.postgresql:postgresql'
+//    runtimeOnly 'org.postgresql:postgresql'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
@@ -44,6 +44,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     testImplementation 'org.springframework.security:spring-security-test'
+
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
+
+    // https://mvnrepository.com/artifact/org.springframework.session/spring-session-jdbc
+    implementation group: 'org.springframework.session', name: 'spring-session-jdbc', version: '2.3.0.RELEASE'
+
 }
 
 tasks.named('test') {
