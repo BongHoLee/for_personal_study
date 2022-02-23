@@ -1,8 +1,10 @@
 package io.security.corespringsecurity.security.provider;
 
+import io.security.corespringsecurity.common.FormWebAuthenticationDetails;
 import io.security.corespringsecurity.security.service.AccountContext;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -34,6 +36,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         // 패스워드 일치 여부에 대한 검증을 한다.
         if (!passwordEncoder.matches(password, accountContext.getAccount().getPassword())) {
             throw new BadCredentialsException("BadCredentialsException");
+        }
+
+
+        // 클라이언트가 전달한 디테일 정보를 가져와서 검증 처리
+        FormWebAuthenticationDetails details = (FormWebAuthenticationDetails) authentication.getDetails();
+        String secretKey = details.getSecretKey();
+        if (secretKey == null || !secretKey.equals("secret")) {
+            throw  new InsufficientAuthenticationException("InSufficientAuthenticationException");
         }
 
         // 인증에 성공하게 되면 Token을 만들어서 반환.
