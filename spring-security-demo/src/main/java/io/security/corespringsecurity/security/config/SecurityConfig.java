@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
@@ -35,6 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationSuccessHandler successHandler;
 
+    @Autowired
+    private AuthenticationFailureHandler failureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -69,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 우선 각 페이지와 페이지에 접근할 수 있는 권한을 설정
         http
                 .authorizeRequests()
-                .antMatchers("/", "/users", "user/login/**").permitAll()
+                .antMatchers("/", "/users", "user/login/**", "/login*").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
@@ -81,6 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationDetailsSource(formAuthenticationDetailsSource)
                 .defaultSuccessUrl("/")
                 .successHandler(successHandler)
+                .failureHandler(failureHandler)
                 .permitAll()
                 ;
 
