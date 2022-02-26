@@ -1,4 +1,4 @@
-package io.security.corespringsecurity.common;
+package io.security.corespringsecurity.security.common;
 
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 

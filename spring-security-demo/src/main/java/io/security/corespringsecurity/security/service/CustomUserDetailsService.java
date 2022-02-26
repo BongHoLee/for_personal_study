@@ -22,6 +22,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    // AuthenticationProvider가 호출
+    // 유저의 인증, 인가와 관련된 정보를 UserDetails에 담아서 반환
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 

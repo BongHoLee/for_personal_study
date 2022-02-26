@@ -1,6 +1,6 @@
 package io.security.corespringsecurity.security.provider;
 
-import io.security.corespringsecurity.common.FormWebAuthenticationDetails;
+import io.security.corespringsecurity.security.common.FormWebAuthenticationDetails;
 import io.security.corespringsecurity.security.service.AccountContext;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,6 +41,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         // 클라이언트가 전달한 디테일 정보를 가져와서 검증 처리
         FormWebAuthenticationDetails details = (FormWebAuthenticationDetails) authentication.getDetails();
+
         String secretKey = details.getSecretKey();
         if (secretKey == null || !secretKey.equals("secret")) {
             throw  new InsufficientAuthenticationException("InSufficientAuthenticationException");

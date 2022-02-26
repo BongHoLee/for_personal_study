@@ -1,7 +1,7 @@
 package io.security.corespringsecurity.security.config;
 
-import io.security.corespringsecurity.handler.CustomAccessDeniedHandler;
-import io.security.corespringsecurity.handler.CustomAuthenticationSuccessHandler;
+import io.security.corespringsecurity.security.filter.AjaxLoginProcessingFilter;
+import io.security.corespringsecurity.security.handler.CustomAccessDeniedHandler;
 import io.security.corespringsecurity.security.provider.CustomAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,20 +43,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationFailureHandler failureHandler;
 
 
+    // 직접 구현한 userDetailsService 구현체를 인증에 사용하도록 설정
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());
+    }
+
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 직접 구현한 userDetailsService 구현체를 인증에 사용하도록 설정
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
-        // 이제 AuthenticationProvider에서 UserDetailsService를 사용하므로 필요 없음
-//        auth.userDetailsService(userDetailsService);
-
-        auth.authenticationProvider(authenticationProvider());
-    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -70,6 +71,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         accessDeniedHandler.setErrorPage("/denied");
 
         return accessDeniedHandler;
+    }
+
+
+    // Filter를 등록하면서 이 필터가 사용할 AuthenticationManager를 등록해줘야 한다.
+    @Bean
+    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
+        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
+        ajaxLoginProcessingFilter.setAuthenticationManager(this.authenticationManagerBean());
+        return ajaxLoginProcessingFilter;
     }
 
     @Override
@@ -88,7 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
                 .anyRequest().authenticated()
-                .and()
+        .and()
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login_proc")
@@ -97,10 +107,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
                 .permitAll()
-                .and()
+        .and()
                 .exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler())
+                .accessDeniedPage("/denied")
+                .accessDeniedHandler(accessDeniedHandler())
+        .and()
+                .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
                 ;
+        http.csrf().disable();  // 기본적으로는 켜져있다.
 
     }
 }
