@@ -42,12 +42,12 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
 
         // 클라이언트가 전달한 디테일 정보를 가져와서 검증 처리
-        FormWebAuthenticationDetails details = (FormWebAuthenticationDetails) authentication.getDetails();
-
-        String secretKey = details.getSecretKey();
-        if (secretKey == null || !secretKey.equals("secret")) {
-            throw  new InsufficientAuthenticationException("InSufficientAuthenticationException");
-        }
+//        FormWebAuthenticationDetails details = (FormWebAuthenticationDetails) authentication.getDetails();
+//
+//        String secretKey = details.getSecretKey();
+//        if (secretKey == null || !secretKey.equals("secret")) {
+//            throw  new InsufficientAuthenticationException("InSufficientAuthenticationException");
+//        }
 
         // 인증에 성공하게 되면 Token을 만들어서 반환.
         // 비밀번호는 민감 정보이기 때문에 null로 전달
