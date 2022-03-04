@@ -1,4 +1,4 @@
-create table safe.batch_job_instance
+create table batch_job_instance
 (
     job_instance_id numeric(19) not null
         constraint con41700929
@@ -8,12 +8,12 @@ create table safe.batch_job_instance
     job_key varchar(32) not null
 );
 
-alter table safe.batch_job_instance owner to safe;
+alter table batch_job_instance owner to postgres;
 
 create unique index job_inst_un
-	on safe.batch_job_instance (job_name, job_key);
+	on batch_job_instance (job_name, job_key);
 
-create table safe.batch_job_execution
+create table batch_job_execution
 (
     job_execution_id numeric(19) not null
         constraint con42200155
@@ -21,7 +21,7 @@ create table safe.batch_job_execution
     version numeric(19),
     job_instance_id numeric(19) not null
         constraint job_inst_exec_fk
-            references safe.batch_job_instance
+            references batch_job_instance
             on update cascade on delete restrict,
     create_time timestamp not null,
     start_time timestamp,
@@ -33,27 +33,27 @@ create table safe.batch_job_execution
     job_configuration_location varchar(2500)
 );
 
-alter table safe.batch_job_execution owner to safe;
+alter table batch_job_execution owner to postgres;
 
-create table safe.batch_job_execution_context
+create table batch_job_execution_context
 (
     job_execution_id numeric(19) not null
         constraint con44300462
             primary key
         constraint job_exec_ctx_fk
-            references safe.batch_job_execution
+            references batch_job_execution
             on update cascade on delete restrict,
     short_context varchar(2500) not null,
     serialized_context text
 );
 
-alter table safe.batch_job_execution_context owner to safe;
+alter table batch_job_execution_context owner to postgres;
 
-create table safe.batch_job_execution_params
+create table batch_job_execution_params
 (
     job_execution_id numeric(19) not null
         constraint job_exec_params_fk
-            references safe.batch_job_execution
+            references batch_job_execution
             on update cascade on delete restrict,
     type_cd varchar(6) not null,
     key_name varchar(100) not null,
@@ -64,9 +64,9 @@ create table safe.batch_job_execution_params
     identifying char not null
 );
 
-alter table safe.batch_job_execution_params owner to safe;
+alter table batch_job_execution_params owner to postgres;
 
-create table safe.batch_step_execution
+create table batch_step_execution
 (
     step_execution_id numeric(19) not null
         constraint con43200139
@@ -75,7 +75,7 @@ create table safe.batch_step_execution
     step_name varchar(100) not null,
     job_execution_id numeric(19) not null
         constraint job_exec_step_fk
-            references safe.batch_job_execution
+            references batch_job_execution
             on update cascade on delete restrict,
     start_time timestamp not null,
     end_time timestamp,
@@ -93,23 +93,23 @@ create table safe.batch_step_execution
     last_updated timestamp
 );
 
-alter table safe.batch_step_execution owner to safe;
+alter table batch_step_execution owner to postgres;
 
-create table safe.batch_step_execution_context
+create table batch_step_execution_context
 (
     step_execution_id numeric(19) not null
         constraint con43900296
             primary key
         constraint step_exec_ctx_fk
-            references safe.batch_step_execution
+            references batch_step_execution
             on update cascade on delete restrict,
     short_context varchar(2500) not null,
     serialized_context text
 );
 
-alter table safe.batch_step_execution_context owner to safe;
+alter table batch_step_execution_context owner to postgres;
 
-create table safe.qrtz_job_details
+create table qrtz_job_details
 (
     sched_name varchar(120) not null,
     job_name varchar(200) not null,
@@ -125,15 +125,15 @@ create table safe.qrtz_job_details
         primary key (sched_name, job_name, job_group)
 );
 
-alter table safe.qrtz_job_details owner to safe;
+alter table qrtz_job_details owner to postgres;
 
 create index idx_qrtz_j_grp
-	on safe.qrtz_job_details (sched_name, job_group);
+	on qrtz_job_details (sched_name, job_group);
 
 create index idx_qrtz_j_req_recovery
-	on safe.qrtz_job_details (sched_name, requests_recovery);
+	on qrtz_job_details (sched_name, requests_recovery);
 
-create table safe.qrtz_triggers
+create table qrtz_triggers
 (
     sched_name varchar(120) not null,
     trigger_name varchar(200) not null,
@@ -154,49 +154,49 @@ create table safe.qrtz_triggers
     constraint qrtz_triggers_pk
         primary key (sched_name, trigger_name, trigger_group),
     constraint qrtz_trigger_to_jobs_fk
-        foreign key (sched_name, job_name, job_group) references safe.qrtz_job_details
+        foreign key (sched_name, job_name, job_group) references qrtz_job_details
             on update cascade on delete restrict
 );
 
-alter table safe.qrtz_triggers owner to safe;
+alter table qrtz_triggers owner to postgres;
 
 create index idx_qrtz_t_c
-	on safe.qrtz_triggers (sched_name, calendar_name);
+	on qrtz_triggers (sched_name, calendar_name);
 
 create index idx_qrtz_t_g
-	on safe.qrtz_triggers (sched_name, trigger_group);
+	on qrtz_triggers (sched_name, trigger_group);
 
 create index idx_qrtz_t_j
-	on safe.qrtz_triggers (sched_name, job_name, job_group);
+	on qrtz_triggers (sched_name, job_name, job_group);
 
 create index idx_qrtz_t_jg
-	on safe.qrtz_triggers (sched_name, job_group);
+	on qrtz_triggers (sched_name, job_group);
 
 create index idx_qrtz_t_n_g_state
-	on safe.qrtz_triggers (sched_name, trigger_group, trigger_state);
+	on qrtz_triggers (sched_name, trigger_group, trigger_state);
 
 create index idx_qrtz_t_n_state
-	on safe.qrtz_triggers (sched_name, trigger_name, trigger_group, trigger_state);
+	on qrtz_triggers (sched_name, trigger_name, trigger_group, trigger_state);
 
 create index idx_qrtz_t_next_fire_time
-	on safe.qrtz_triggers (sched_name, next_fire_time);
+	on qrtz_triggers (sched_name, next_fire_time);
 
 create index idx_qrtz_t_nft_misfire
-	on safe.qrtz_triggers (sched_name, misfire_instr, next_fire_time);
+	on qrtz_triggers (sched_name, misfire_instr, next_fire_time);
 
 create index idx_qrtz_t_nft_st
-	on safe.qrtz_triggers (sched_name, trigger_state, next_fire_time);
+	on qrtz_triggers (sched_name, trigger_state, next_fire_time);
 
 create index idx_qrtz_t_nft_st_misfire
-	on safe.qrtz_triggers (sched_name, misfire_instr, next_fire_time, trigger_state);
+	on qrtz_triggers (sched_name, misfire_instr, next_fire_time, trigger_state);
 
 create index idx_qrtz_t_nft_st_misfire_grp
-	on safe.qrtz_triggers (sched_name, misfire_instr, next_fire_time, trigger_group, trigger_state);
+	on qrtz_triggers (sched_name, misfire_instr, next_fire_time, trigger_group, trigger_state);
 
 create index idx_qrtz_t_state
-	on safe.qrtz_triggers (sched_name, trigger_state);
+	on qrtz_triggers (sched_name, trigger_state);
 
-create table safe.qrtz_calendars
+create table qrtz_calendars
 (
     sched_name varchar(120) not null,
     calendar_name varchar(200) not null,
@@ -205,9 +205,9 @@ create table safe.qrtz_calendars
         primary key (sched_name, calendar_name)
 );
 
-alter table safe.qrtz_calendars owner to safe;
+alter table qrtz_calendars owner to postgres;
 
-create table safe.qrtz_cron_triggers
+create table qrtz_cron_triggers
 (
     sched_name varchar(120) not null,
     trigger_name varchar(200) not null,
@@ -217,13 +217,13 @@ create table safe.qrtz_cron_triggers
     constraint qrtz_cron_trig_pk
         primary key (sched_name, trigger_name, trigger_group),
     constraint qrtz_cron_trig_to_trig_fk
-        foreign key (sched_name, trigger_name, trigger_group) references safe.qrtz_triggers
+        foreign key (sched_name, trigger_name, trigger_group) references qrtz_triggers
             on update cascade on delete restrict
 );
 
-alter table safe.qrtz_cron_triggers owner to safe;
+alter table qrtz_cron_triggers owner to postgres;
 
-create table safe.qrtz_fired_triggers
+create table qrtz_fired_triggers
 (
     sched_name varchar(120) not null,
     entry_id varchar(140) not null,
@@ -242,27 +242,27 @@ create table safe.qrtz_fired_triggers
         primary key (sched_name, entry_id)
 );
 
-alter table safe.qrtz_fired_triggers owner to safe;
+alter table qrtz_fired_triggers owner to postgres;
 
 create index idx_qrtz_ft_inst_job_req_rcvry
-	on safe.qrtz_fired_triggers (sched_name, instance_name, requests_recovery);
+	on qrtz_fired_triggers (sched_name, instance_name, requests_recovery);
 
 create index idx_qrtz_ft_j_g
-	on safe.qrtz_fired_triggers (sched_name, job_name, job_group);
+	on qrtz_fired_triggers (sched_name, job_name, job_group);
 
 create index idx_qrtz_ft_jg
-	on safe.qrtz_fired_triggers (sched_name, job_group);
+	on qrtz_fired_triggers (sched_name, job_group);
 
 create index idx_qrtz_ft_t_g
-	on safe.qrtz_fired_triggers (sched_name, trigger_name, trigger_group);
+	on qrtz_fired_triggers (sched_name, trigger_name, trigger_group);
 
 create index idx_qrtz_ft_tg
-	on safe.qrtz_fired_triggers (sched_name, trigger_group);
+	on qrtz_fired_triggers (sched_name, trigger_group);
 
 create index idx_qrtz_ft_trig_inst_name
-	on safe.qrtz_fired_triggers (sched_name, instance_name);
+	on qrtz_fired_triggers (sched_name, instance_name);
 
-create table safe.qrtz_locks
+create table qrtz_locks
 (
     sched_name varchar(120) not null,
     lock_name varchar(40) not null,
@@ -270,9 +270,9 @@ create table safe.qrtz_locks
         primary key (sched_name, lock_name)
 );
 
-alter table safe.qrtz_locks owner to safe;
+alter table qrtz_locks owner to postgres;
 
-create table safe.qrtz_paused_trigger_grps
+create table qrtz_paused_trigger_grps
 (
     sched_name varchar(120) not null,
     trigger_group varchar(200) not null,
@@ -280,9 +280,9 @@ create table safe.qrtz_paused_trigger_grps
         primary key (sched_name, trigger_group)
 );
 
-alter table safe.qrtz_paused_trigger_grps owner to safe;
+alter table qrtz_paused_trigger_grps owner to postgres;
 
-create table safe.qrtz_scheduler_state
+create table qrtz_scheduler_state
 (
     sched_name varchar(120) not null,
     instance_name varchar(200) not null,
@@ -292,9 +292,9 @@ create table safe.qrtz_scheduler_state
         primary key (sched_name, instance_name)
 );
 
-alter table safe.qrtz_scheduler_state owner to safe;
+alter table qrtz_scheduler_state owner to postgres;
 
-create table safe.qrtz_simple_triggers
+create table qrtz_simple_triggers
 (
     sched_name varchar(120) not null,
     trigger_name varchar(200) not null,
@@ -305,13 +305,13 @@ create table safe.qrtz_simple_triggers
     constraint qrtz_simple_trig_pk
         primary key (sched_name, trigger_name, trigger_group),
     constraint qrtz_simple_trig_to_trig_fk
-        foreign key (sched_name, trigger_name, trigger_group) references safe.qrtz_triggers
+        foreign key (sched_name, trigger_name, trigger_group) references qrtz_triggers
             on update cascade on delete restrict
 );
 
-alter table safe.qrtz_simple_triggers owner to safe;
+alter table qrtz_simple_triggers owner to postgres;
 
-create table safe.qrtz_simprop_triggers
+create table qrtz_simprop_triggers
 (
     sched_name varchar(120) not null,
     trigger_name varchar(200) not null,
@@ -331,13 +331,13 @@ create table safe.qrtz_simprop_triggers
     constraint qrtz_simprop_trig_pk
         primary key (sched_name, trigger_name, trigger_group),
     constraint qrtz_simprop_trig_to_trig_fk
-        foreign key (sched_name, trigger_name, trigger_group) references safe.qrtz_triggers
+        foreign key (sched_name, trigger_name, trigger_group) references qrtz_triggers
             on update cascade on delete restrict
 );
 
-alter table safe.qrtz_simprop_triggers owner to safe;
+alter table qrtz_simprop_triggers owner to postgres;
 
-create table safe.qrtz_text_triggers
+create table qrtz_text_triggers
 (
     sched_name varchar(120) not null,
     trigger_name varchar(200) not null,
@@ -346,13 +346,13 @@ create table safe.qrtz_text_triggers
     constraint qrtz_text_trig_pk
         primary key (sched_name, trigger_name, trigger_group),
     constraint qrtz_text_trig_to_trig_fk
-        foreign key (sched_name, trigger_name, trigger_group) references safe.qrtz_triggers
+        foreign key (sched_name, trigger_name, trigger_group) references qrtz_triggers
             on update cascade on delete restrict
 );
 
-alter table safe.qrtz_text_triggers owner to safe;
+alter table qrtz_text_triggers owner to postgres;
 
-create table safe.sf_at_dataset
+create table sf_at_dataset
 (
     dataset_id varchar(255) not null
         constraint sf_at_dataset_pkey
@@ -368,9 +368,9 @@ create table safe.sf_at_dataset
     dataset_clc varchar(1) not null
 );
 
-alter table safe.sf_at_dataset owner to safe;
+alter table sf_at_dataset owner to postgres;
 
-create table safe.sf_at_dataset_var
+create table sf_at_dataset_var
 (
     dataset_id varchar(10) not null,
     dataset_clc varchar(1) not null,
@@ -390,9 +390,9 @@ create table safe.sf_at_dataset_var
         primary key (dataset_id, var_seq)
 );
 
-alter table safe.sf_at_dataset_var owner to safe;
+alter table sf_at_dataset_var owner to postgres;
 
-create table safe.sf_at_mopm_anlt_rst
+create table sf_at_mopm_anlt_rst
 (
     crt_dt varchar(8) not null,
     tgt_clc varchar(2) not null,
@@ -407,9 +407,9 @@ create table safe.sf_at_mopm_anlt_rst
         primary key (crt_dt, tgt_clc, tgt_id)
 );
 
-alter table safe.sf_at_mopm_anlt_rst owner to safe;
+alter table sf_at_mopm_anlt_rst owner to postgres;
 
-create table safe.sf_at_mopm_dic
+create table sf_at_mopm_dic
 (
     dic_clc varchar(1) not null,
     dic_no varchar(10) not null,
@@ -425,9 +425,9 @@ create table safe.sf_at_mopm_dic
         primary key (dic_clc, dic_no)
 );
 
-alter table safe.sf_at_mopm_dic owner to safe;
+alter table sf_at_mopm_dic owner to postgres;
 
-create table safe.sf_at_mopm_rnk_agg_rst
+create table sf_at_mopm_rnk_agg_rst
 (
     req_dt varchar(8) not null,
     req_seq numeric(3) not null,
@@ -444,9 +444,9 @@ create table safe.sf_at_mopm_rnk_agg_rst
         primary key (req_dt, req_seq, tgt_clc, prcs_seq)
 );
 
-alter table safe.sf_at_mopm_rnk_agg_rst owner to safe;
+alter table sf_at_mopm_rnk_agg_rst owner to postgres;
 
-create table safe.sf_at_mopm_rnk_rst
+create table sf_at_mopm_rnk_rst
 (
     req_dt varchar(8) not null,
     req_seq numeric(3) not null,
@@ -467,9 +467,9 @@ create table safe.sf_at_mopm_rnk_rst
         primary key (req_dt, req_seq, tgt_clc)
 );
 
-alter table safe.sf_at_mopm_rnk_rst owner to safe;
+alter table sf_at_mopm_rnk_rst owner to postgres;
 
-create table safe.sf_at_rule_rcmd
+create table sf_at_rule_rcmd
 (
     rcmd_mgt_id varchar(8) not null
         constraint sf_at_rule_rcmd_pk
@@ -489,9 +489,9 @@ create table safe.sf_at_rule_rcmd
     tgt_dataset_id varchar(255)
 );
 
-alter table safe.sf_at_rule_rcmd owner to safe;
+alter table sf_at_rule_rcmd owner to postgres;
 
-create table safe.sf_at_rule_rcmd_cnd_mgt
+create table sf_at_rule_rcmd_cnd_mgt
 (
     rcmd_mgt_id varchar(8) not null,
     reg_seq numeric(3) not null,
@@ -506,9 +506,9 @@ create table safe.sf_at_rule_rcmd_cnd_mgt
         primary key (rcmd_mgt_id, reg_seq)
 );
 
-alter table safe.sf_at_rule_rcmd_cnd_mgt owner to safe;
+alter table sf_at_rule_rcmd_cnd_mgt owner to postgres;
 
-create table safe.sf_at_rule_rcmd_detc_rst
+create table sf_at_rule_rcmd_detc_rst
 (
     req_dt varchar(8) not null,
     rcmd_mgt_id varchar(8) not null,
@@ -527,9 +527,9 @@ create table safe.sf_at_rule_rcmd_detc_rst
         primary key (req_dt, rcmd_mgt_id, req_seq, cnd_seq)
 );
 
-alter table safe.sf_at_rule_rcmd_detc_rst owner to safe;
+alter table sf_at_rule_rcmd_detc_rst owner to postgres;
 
-create table safe.sf_at_rule_rcmd_exec_mgt
+create table sf_at_rule_rcmd_exec_mgt
 (
     rcmd_mgt_id varchar(255) not null
         constraint sf_at_rule_rcmd_exec_mgt_pkey
@@ -545,9 +545,9 @@ create table safe.sf_at_rule_rcmd_exec_mgt
     reg_usr_id varchar(255)
 );
 
-alter table safe.sf_at_rule_rcmd_exec_mgt owner to safe;
+alter table sf_at_rule_rcmd_exec_mgt owner to postgres;
 
-create table safe.sf_at_rule_rcmd_prcs_hst
+create table sf_at_rule_rcmd_prcs_hst
 (
     req_dt varchar(8) not null,
     rcmd_mgt_id varchar(8) not null,
@@ -588,9 +588,9 @@ create table safe.sf_at_rule_rcmd_prcs_hst
         primary key (req_dt, rcmd_mgt_id, req_seq)
 );
 
-alter table safe.sf_at_rule_rcmd_prcs_hst owner to safe;
+alter table sf_at_rule_rcmd_prcs_hst owner to postgres;
 
-create table safe.sf_at_rule_siml
+create table sf_at_rule_siml
 (
     siml_id varchar(8) not null
         constraint sf_at_rule_siml_pk
@@ -608,9 +608,9 @@ create table safe.sf_at_rule_siml
     chg_stm date not null
 );
 
-alter table safe.sf_at_rule_siml owner to safe;
+alter table sf_at_rule_siml owner to postgres;
 
-create table safe.sf_at_rule_siml_data
+create table sf_at_rule_siml_data
 (
     crt_dt varchar(8) not null,
     data_clc varchar(2) not null,
@@ -624,9 +624,9 @@ create table safe.sf_at_rule_siml_data
         primary key (crt_dt, data_clc, data_id_ctnt)
 );
 
-alter table safe.sf_at_rule_siml_data owner to safe;
+alter table sf_at_rule_siml_data owner to postgres;
 
-create table safe.sf_at_rule_siml_detc_rst
+create table sf_at_rule_siml_detc_rst
 (
     req_dt varchar(8) not null,
     siml_id varchar(8) not null,
@@ -646,9 +646,9 @@ create table safe.sf_at_rule_siml_detc_rst
         primary key (req_dt, siml_id, req_seq, detc_tgt_id)
 );
 
-alter table safe.sf_at_rule_siml_detc_rst owner to safe;
+alter table sf_at_rule_siml_detc_rst owner to postgres;
 
-create table safe.sf_at_rule_siml_prcs_hst
+create table sf_at_rule_siml_prcs_hst
 (
     req_dt varchar(8) not null,
     siml_id varchar(8) not null,
@@ -676,9 +676,9 @@ create table safe.sf_at_rule_siml_prcs_hst
         primary key (req_dt, siml_id, req_seq)
 );
 
-alter table safe.sf_at_rule_siml_prcs_hst owner to safe;
+alter table sf_at_rule_siml_prcs_hst owner to postgres;
 
-create table safe.sf_bt_btc_bs
+create table sf_bt_btc_bs
 (
     btc_id varchar(10) not null
         constraint sf_bt_btc_bs_pk
@@ -700,9 +700,9 @@ create table safe.sf_bt_btc_bs
     chg_stm date not null
 );
 
-alter table safe.sf_bt_btc_bs owner to safe;
+alter table sf_bt_btc_bs owner to postgres;
 
-create table safe.sf_bt_btc_dpdc_mgt
+create table sf_bt_btc_dpdc_mgt
 (
     btc_id varchar(10) not null,
     dpdc_btc_id varchar(10) not null,
@@ -714,9 +714,9 @@ create table safe.sf_bt_btc_dpdc_mgt
         primary key (btc_id, dpdc_btc_id)
 );
 
-alter table safe.sf_bt_btc_dpdc_mgt owner to safe;
+alter table sf_bt_btc_dpdc_mgt owner to postgres;
 
-create table safe.sf_bt_btc_param_mgt
+create table sf_bt_btc_param_mgt
 (
     btc_id varchar(10) not null,
     param_seq numeric(3) not null,
@@ -731,9 +731,9 @@ create table safe.sf_bt_btc_param_mgt
         primary key (btc_id, param_seq)
 );
 
-alter table safe.sf_bt_btc_param_mgt owner to safe;
+alter table sf_bt_btc_param_mgt owner to postgres;
 
-create table safe.sf_bt_btc_prcs_hst
+create table sf_bt_btc_prcs_hst
 (
     crt_dt varchar(8) not null,
     btc_id varchar(10) not null,
@@ -756,9 +756,9 @@ create table safe.sf_bt_btc_prcs_hst
         primary key (crt_dt, btc_id, exec_seq)
 );
 
-alter table safe.sf_bt_btc_prcs_hst owner to safe;
+alter table sf_bt_btc_prcs_hst owner to postgres;
 
-create table safe.sf_cm_api
+create table sf_cm_api
 (
     api_id varchar(20) not null
         constraint sf_cm_api_pk
@@ -776,9 +776,9 @@ create table safe.sf_cm_api
     chg_stm date not null
 );
 
-alter table safe.sf_cm_api owner to safe;
+alter table sf_cm_api owner to postgres;
 
-create table safe.sf_cm_api_exec_hst
+create table sf_cm_api_exec_hst
 (
     exec_id varchar(20) not null
         constraint sf_cm_api_exec_hst_pk
@@ -792,9 +792,9 @@ create table safe.sf_cm_api_exec_hst
     chg_stm date not null
 );
 
-alter table safe.sf_cm_api_exec_hst owner to safe;
+alter table sf_cm_api_exec_hst owner to postgres;
 
-create table safe.sf_cm_api_role_mapp
+create table sf_cm_api_role_mapp
 (
     api_id varchar(50) not null,
     role_id varchar(20) not null,
@@ -806,9 +806,9 @@ create table safe.sf_cm_api_role_mapp
         primary key (api_id, role_id)
 );
 
-alter table safe.sf_cm_api_role_mapp owner to safe;
+alter table sf_cm_api_role_mapp owner to postgres;
 
-create table safe.sf_cm_cmd
+create table sf_cm_cmd
 (
     cmd_id varchar(50) not null
         constraint sf_cm_exec_pk
@@ -821,9 +821,9 @@ create table safe.sf_cm_cmd
     chg_stm date not null
 );
 
-alter table safe.sf_cm_cmd owner to safe;
+alter table sf_cm_cmd owner to postgres;
 
-create table safe.sf_cm_cmd_role_mapp
+create table sf_cm_cmd_role_mapp
 (
     cmd_id varchar(50) not null,
     role_id varchar(20) not null,
@@ -835,9 +835,9 @@ create table safe.sf_cm_cmd_role_mapp
         primary key (cmd_id, role_id)
 );
 
-alter table safe.sf_cm_cmd_role_mapp owner to safe;
+alter table sf_cm_cmd_role_mapp owner to postgres;
 
-create table safe.sf_cm_com_cd
+create table sf_cm_com_cd
 (
     com_cd_tp_id varchar(6) not null,
     com_cd varchar(8) not null,
@@ -856,9 +856,9 @@ create table safe.sf_cm_com_cd
         primary key (com_cd_tp_id, com_cd)
 );
 
-alter table safe.sf_cm_com_cd owner to safe;
+alter table sf_cm_com_cd owner to postgres;
 
-create table safe.sf_cm_com_cd_tp
+create table sf_cm_com_cd_tp
 (
     com_cd_tp_id varchar(6) not null
         constraint sf_cm_com_cd_tp_pk
@@ -874,9 +874,9 @@ create table safe.sf_cm_com_cd_tp
     chg_stm date not null
 );
 
-alter table safe.sf_cm_com_cd_tp owner to safe;
+alter table sf_cm_com_cd_tp owner to postgres;
 
-create table safe.sf_cm_db_chg_hst
+create table sf_cm_db_chg_hst
 (
     tbl_id varchar(20) not null,
     crt_dtm varchar(14) not null,
@@ -889,9 +889,9 @@ create table safe.sf_cm_db_chg_hst
     chg_stm date not null
 );
 
-alter table safe.sf_cm_db_chg_hst owner to safe;
+alter table sf_cm_db_chg_hst owner to postgres;
 
-create table safe.sf_cm_dsbd_tgt_mgt
+create table sf_cm_dsbd_tgt_mgt
 (
     svr_id varchar(50) not null,
     dsbd_ctg_clc varchar(2) not null,
@@ -907,9 +907,9 @@ create table safe.sf_cm_dsbd_tgt_mgt
         primary key (svr_id, dsbd_ctg_clc, dsbd_tp_clc)
 );
 
-alter table safe.sf_cm_dsbd_tgt_mgt owner to safe;
+alter table sf_cm_dsbd_tgt_mgt owner to postgres;
 
-create table safe.sf_cm_dsbd_tgt_prcs_hist
+create table sf_cm_dsbd_tgt_prcs_hist
 (
     svr_id varchar(50) not null,
     dsbd_ctg_clc varchar(2) not null,
@@ -928,9 +928,9 @@ create table safe.sf_cm_dsbd_tgt_prcs_hist
         primary key (svr_id, dsbd_ctg_clc, dsbd_tp_clc, tgt_tp_clc, cri_dt, cri_tm)
 );
 
-alter table safe.sf_cm_dsbd_tgt_prcs_hist owner to safe;
+alter table sf_cm_dsbd_tgt_prcs_hist owner to postgres;
 
-create table safe.sf_cm_dt
+create table sf_cm_dt
 (
     dt varchar(8) not null
         constraint sf_cm_dt_pk
@@ -944,9 +944,9 @@ create table safe.sf_cm_dt
     chg_stm date not null
 );
 
-alter table safe.sf_cm_dt owner to safe;
+alter table sf_cm_dt owner to postgres;
 
-create table safe.sf_cm_menu
+create table sf_cm_menu
 (
     menu_id varchar(20) not null
         constraint sf_cm_menu_pk
@@ -963,9 +963,9 @@ create table safe.sf_cm_menu
     chg_stm date not null
 );
 
-alter table safe.sf_cm_menu owner to safe;
+alter table sf_cm_menu owner to postgres;
 
-create table safe.sf_cm_menu_role_mapp
+create table sf_cm_menu_role_mapp
 (
     menu_id varchar(20) not null,
     role_id varchar(20) not null,
@@ -977,9 +977,9 @@ create table safe.sf_cm_menu_role_mapp
         primary key (menu_id, role_id)
 );
 
-alter table safe.sf_cm_menu_role_mapp owner to safe;
+alter table sf_cm_menu_role_mapp owner to postgres;
 
-create table safe.sf_cm_role
+create table sf_cm_role
 (
     role_id varchar(20) not null
         constraint sf_cm_role_pk
@@ -992,9 +992,9 @@ create table safe.sf_cm_role
     chg_stm date not null
 );
 
-alter table safe.sf_cm_role owner to safe;
+alter table sf_cm_role owner to postgres;
 
-create table safe.sf_cm_svr_mgt
+create table sf_cm_svr_mgt
 (
     svr_id varchar(50) not null
         constraint sf_cm_svr_mgt_pk
@@ -1009,9 +1009,9 @@ create table safe.sf_cm_svr_mgt
     chg_stm date
 );
 
-alter table safe.sf_cm_svr_mgt owner to safe;
+alter table sf_cm_svr_mgt owner to postgres;
 
-create table safe.sf_cm_url_inq_hst
+create table sf_cm_url_inq_hst
 (
     crt_dtm varchar(255) not null,
     url_ctnt varchar(255) not null,
@@ -1025,9 +1025,9 @@ create table safe.sf_cm_url_inq_hst
         primary key (crt_dtm, url_ctnt, usr_id)
 );
 
-alter table safe.sf_cm_url_inq_hst owner to safe;
+alter table sf_cm_url_inq_hst owner to postgres;
 
-create table safe.sf_cm_url_mgt
+create table sf_cm_url_mgt
 (
     url_ctnt varchar(50) not null
         constraint sf_cm_url_pk
@@ -1043,9 +1043,9 @@ create table safe.sf_cm_url_mgt
     chg_stm date
 );
 
-alter table safe.sf_cm_url_mgt owner to safe;
+alter table sf_cm_url_mgt owner to postgres;
 
-create table safe.sf_cm_usr
+create table sf_cm_usr
 (
     usr_id varchar(20) not null
         constraint sf_cm_usr_pk
@@ -1070,9 +1070,9 @@ create table safe.sf_cm_usr
     chg_stm date not null
 );
 
-alter table safe.sf_cm_usr owner to safe;
+alter table sf_cm_usr owner to postgres;
 
-create table safe.sf_cm_usr_conn_hst
+create table sf_cm_usr_conn_hst
 (
     usr_id varchar(20) not null,
     crt_dtm varchar(14) not null,
@@ -1089,9 +1089,9 @@ create table safe.sf_cm_usr_conn_hst
         primary key (usr_id, crt_dtm)
 );
 
-alter table safe.sf_cm_usr_conn_hst owner to safe;
+alter table sf_cm_usr_conn_hst owner to postgres;
 
-create table safe.sf_cm_usr_role_mapp
+create table sf_cm_usr_role_mapp
 (
     usr_id varchar(20) not null,
     role_id varchar(20) not null,
@@ -1103,9 +1103,9 @@ create table safe.sf_cm_usr_role_mapp
         primary key (usr_id, role_id)
 );
 
-alter table safe.sf_cm_usr_role_mapp owner to safe;
+alter table sf_cm_usr_role_mapp owner to postgres;
 
-create table safe.sf_lt_msg_layout_mgt
+create table sf_lt_msg_layout_mgt
 (
     msg_tp_id varchar(10) not null,
     item_seq numeric(3) not null,
@@ -1125,9 +1125,9 @@ create table safe.sf_lt_msg_layout_mgt
         primary key (msg_tp_id, item_seq)
 );
 
-alter table safe.sf_lt_msg_layout_mgt owner to safe;
+alter table sf_lt_msg_layout_mgt owner to postgres;
 
-create table safe.sf_lt_msg_mgt
+create table sf_lt_msg_mgt
 (
     msg_tp_id varchar(10) not null
         constraint sf_lt_msg_mgt_pk
@@ -1141,9 +1141,9 @@ create table safe.sf_lt_msg_mgt
     chg_stm date not null
 );
 
-alter table safe.sf_lt_msg_mgt owner to safe;
+alter table sf_lt_msg_mgt owner to postgres;
 
-create table safe.sf_lt_msg_prcs_log
+create table sf_lt_msg_prcs_log
 (
     msg_guid varchar(50) not null
         constraint sf_lt_msg_prcs_log_pk
@@ -1166,12 +1166,12 @@ create table safe.sf_lt_msg_prcs_log
     chg_stm date not null
 );
 
-alter table safe.sf_lt_msg_prcs_log owner to safe;
+alter table sf_lt_msg_prcs_log owner to postgres;
 
 create index sf_lt_msg_prcs_log_idx_1
-	on safe.sf_lt_msg_prcs_log (crt_dt, msg_sbj_id);
+	on sf_lt_msg_prcs_log (crt_dt, msg_sbj_id);
 
-create table safe.sf_lt_msg_test_data
+create table sf_lt_msg_test_data
 (
     msg_tp_id varchar(10) not null,
     reg_seq numeric(5) not null,
@@ -1185,9 +1185,9 @@ create table safe.sf_lt_msg_test_data
         primary key (msg_tp_id, reg_seq)
 );
 
-alter table safe.sf_lt_msg_test_data owner to safe;
+alter table sf_lt_msg_test_data owner to postgres;
 
-create table safe.sf_lt_msg_test_mgt
+create table sf_lt_msg_test_mgt
 (
     test_id varchar(10) not null
         constraint sf_lt_msg_test_mgt_pk
@@ -1208,9 +1208,9 @@ create table safe.sf_lt_msg_test_mgt
     chg_stm date not null
 );
 
-alter table safe.sf_lt_msg_test_mgt owner to safe;
+alter table sf_lt_msg_test_mgt owner to postgres;
 
-create table safe.sf_lt_prcs_err_log
+create table sf_lt_prcs_err_log
 (
     msg_guid varchar(50) not null,
     reg_seq numeric(3) not null,
@@ -1227,9 +1227,9 @@ create table safe.sf_lt_prcs_err_log
         primary key (msg_guid, reg_seq)
 );
 
-alter table safe.sf_lt_prcs_err_log owner to safe;
+alter table sf_lt_prcs_err_log owner to postgres;
 
-create table safe.sf_ml_sbrf
+create table sf_ml_sbrf
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -1312,9 +1312,9 @@ create table safe.sf_ml_sbrf
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_ml_sbrf owner to safe;
+alter table sf_ml_sbrf owner to postgres;
 
-create table safe.sf_mo_ctc_mgt
+create table sf_mo_ctc_mgt
 (
     ctc_tgt_id varchar(50) not null,
     ctc_dtm varchar(14) not null,
@@ -1333,9 +1333,9 @@ create table safe.sf_mo_ctc_mgt
         primary key (ctc_tgt_id, ctc_dtm)
 );
 
-alter table safe.sf_mo_ctc_mgt owner to safe;
+alter table sf_mo_ctc_mgt owner to postgres;
 
-create table safe.sf_mo_memo_mgt
+create table sf_mo_memo_mgt
 (
     memo_tgt_id varchar(50) not null,
     memo_wrt_dtm varchar(14) not null,
@@ -1351,9 +1351,9 @@ create table safe.sf_mo_memo_mgt
         primary key (memo_tgt_id, memo_wrt_dtm)
 );
 
-alter table safe.sf_mo_memo_mgt owner to safe;
+alter table sf_mo_memo_mgt owner to postgres;
 
-create table safe.sf_ms_crd_bs
+create table sf_ms_crd_bs
 (
     crdid varchar(19) not null
         constraint sf_ms_crd_bs_pk
@@ -1381,9 +1381,9 @@ create table safe.sf_ms_crd_bs
     chg_stm date
 );
 
-alter table safe.sf_ms_crd_bs owner to safe;
+alter table sf_ms_crd_bs owner to postgres;
 
-create table safe.sf_ms_cst_bs
+create table sf_ms_cst_bs
 (
     cstno varchar(10) not null
         constraint sf_ms_cst_bs_pk
@@ -1414,11 +1414,11 @@ create table safe.sf_ms_cst_bs
     chg_stm date
 );
 
-comment on column safe.sf_ms_cst_bs.cst_brth_dt is '생년월일';
+comment on column sf_ms_cst_bs.cst_brth_dt is '생년월일';
 
-alter table safe.sf_ms_cst_bs owner to safe;
+alter table sf_ms_cst_bs owner to postgres;
 
-create table safe.sf_ms_fds_acnt
+create table sf_ms_fds_acnt
 (
     acnt_id varchar(50) not null
         constraint sf_ms_fds_acnt_pk
@@ -1461,9 +1461,9 @@ create table safe.sf_ms_fds_acnt
     non_face_athn_mobl_phon_no_cryp varchar(255)
 );
 
-alter table safe.sf_ms_fds_acnt owner to safe;
+alter table sf_ms_fds_acnt owner to postgres;
 
-create table safe.sf_ms_fds_clnt
+create table sf_ms_fds_clnt
 (
     clnt_enty_id varchar(50) not null
         constraint sf_ms_fds_clnt_pk
@@ -1517,9 +1517,9 @@ create table safe.sf_ms_fds_clnt
     prva_crtc_isnc_dtae varchar(255)
 );
 
-alter table safe.sf_ms_fds_clnt owner to safe;
+alter table sf_ms_fds_clnt owner to postgres;
 
-create table safe.sf_ms_jnt_mct_bs
+create table sf_ms_jnt_mct_bs
 (
     crno varchar(10) not null
         constraint sf_ms_jnt_mct_bs_pk
@@ -1535,9 +1535,9 @@ create table safe.sf_ms_jnt_mct_bs
     mct_pno varchar(15)
 );
 
-alter table safe.sf_ms_jnt_mct_bs owner to safe;
+alter table sf_ms_jnt_mct_bs owner to postgres;
 
-create table safe.sf_ms_mbr_bs
+create table sf_ms_mbr_bs
 (
     mbrno varchar(10) not null
         constraint sf_ms_mbr_bs_pk
@@ -1558,9 +1558,9 @@ create table safe.sf_ms_mbr_bs
     ovs_lmt_amt numeric(18)
 );
 
-alter table safe.sf_ms_mbr_bs owner to safe;
+alter table sf_ms_mbr_bs owner to postgres;
 
-create table safe.sf_ms_mct_bs
+create table sf_ms_mct_bs
 (
     mctno varchar(20) not null
         constraint sf_ms_mct_bs_pk
@@ -1585,9 +1585,9 @@ create table safe.sf_ms_mct_bs
     dgt_cstno varchar(10)
 );
 
-alter table safe.sf_ms_mct_bs owner to safe;
+alter table sf_ms_mct_bs owner to postgres;
 
-create table safe.sf_mt_cnc
+create table sf_mt_cnc
 (
     cnc varchar(3) not null
         constraint sf_mt_cnc_pk
@@ -1606,9 +1606,9 @@ create table safe.sf_mt_cnc
     chg_stm date
 );
 
-alter table safe.sf_mt_cnc owner to safe;
+alter table sf_mt_cnc owner to postgres;
 
-create table safe.sf_mt_dom_area
+create table sf_mt_dom_area
 (
     area_clc varchar(1) not null,
     area_id varchar(6) not null,
@@ -1624,9 +1624,9 @@ create table safe.sf_mt_dom_area
         primary key (area_clc, area_id)
 );
 
-alter table safe.sf_mt_dom_area owner to safe;
+alter table sf_mt_dom_area owner to postgres;
 
-create table safe.sf_mt_mcc
+create table sf_mt_mcc
 (
     mcc_clc varchar(1) not null,
     mcc varchar(4) not null,
@@ -1642,9 +1642,9 @@ create table safe.sf_mt_mcc
         primary key (mcc_clc, mcc)
 );
 
-alter table safe.sf_mt_mcc owner to safe;
+alter table sf_mt_mcc owner to postgres;
 
-create table safe.sf_mt_ovs_area
+create table sf_mt_ovs_area
 (
     area_clc varchar(1) not null,
     area_id varchar(20) not null,
@@ -1661,9 +1661,9 @@ create table safe.sf_mt_ovs_area
         primary key (area_clc, area_id)
 );
 
-alter table safe.sf_mt_ovs_area owner to safe;
+alter table sf_mt_ovs_area owner to postgres;
 
-create table safe.sf_pf_acnt
+create table sf_pf_acnt
 (
     acct_id varchar(50) not null
         constraint sf_pf_acnt_pk
@@ -1685,9 +1685,9 @@ create table safe.sf_pf_acnt
     chg_stm date not null
 );
 
-alter table safe.sf_pf_acnt owner to safe;
+alter table sf_pf_acnt owner to postgres;
 
-create table safe.sf_pf_clnt
+create table sf_pf_clnt
 (
     cst_id varchar(50) not null
         constraint sf_pf_clnt_pk
@@ -1702,9 +1702,9 @@ create table safe.sf_pf_clnt
     chg_stm date not null
 );
 
-alter table safe.sf_pf_clnt owner to safe;
+alter table sf_pf_clnt owner to postgres;
 
-create table safe.sf_pf_conn_trm
+create table sf_pf_conn_trm
 (
     trm_gthr_clc varchar(2) not null,
     trm_gthr_ntv_id varchar(255) not null,
@@ -1719,9 +1719,9 @@ create table safe.sf_pf_conn_trm
         primary key (trm_gthr_clc, trm_gthr_ntv_id, cst_id)
 );
 
-alter table safe.sf_pf_conn_trm owner to safe;
+alter table sf_pf_conn_trm owner to postgres;
 
-create table safe.sf_pf_crd_dom_prf
+create table sf_pf_crd_dom_prf
 (
     crdid varchar(19) not null,
     crt_ym varchar(6) not null,
@@ -1775,9 +1775,9 @@ create table safe.sf_pf_crd_dom_prf
         primary key (crdid, crt_ym)
 );
 
-alter table safe.sf_pf_crd_dom_prf owner to safe;
+alter table sf_pf_crd_dom_prf owner to postgres;
 
-create table safe.sf_pf_crd_fnc_prf
+create table sf_pf_crd_fnc_prf
 (
     crdid varchar(19) not null,
     crt_ym varchar(6) not null,
@@ -1790,9 +1790,9 @@ create table safe.sf_pf_crd_fnc_prf
         primary key (crdid, crt_ym)
 );
 
-alter table safe.sf_pf_crd_fnc_prf owner to safe;
+alter table sf_pf_crd_fnc_prf owner to postgres;
 
-create table safe.sf_pf_crd_ovs_ftf_prf
+create table sf_pf_crd_ovs_ftf_prf
 (
     crdid varchar(19) not null,
     crt_y varchar(4) not null,
@@ -1805,9 +1805,9 @@ create table safe.sf_pf_crd_ovs_ftf_prf
         primary key (crdid, crt_y)
 );
 
-alter table safe.sf_pf_crd_ovs_ftf_prf owner to safe;
+alter table sf_pf_crd_ovs_ftf_prf owner to postgres;
 
-create table safe.sf_pf_crd_ovs_nftf_prf
+create table sf_pf_crd_ovs_nftf_prf
 (
     crdid varchar(19) not null,
     crt_y varchar(4) not null,
@@ -1820,9 +1820,9 @@ create table safe.sf_pf_crd_ovs_nftf_prf
         primary key (crdid, crt_y)
 );
 
-alter table safe.sf_pf_crd_ovs_nftf_prf owner to safe;
+alter table sf_pf_crd_ovs_nftf_prf owner to postgres;
 
-create table safe.sf_pf_cst_prf
+create table sf_pf_cst_prf
 (
     cstno varchar(10) not null
         constraint sf_pf_cst_prf_pk
@@ -1834,9 +1834,9 @@ create table safe.sf_pf_cst_prf
     bf_tx_dtm varchar(14)
 );
 
-alter table safe.sf_pf_cst_prf owner to safe;
+alter table sf_pf_cst_prf owner to postgres;
 
-create table safe.sf_pf_mct_dom_prf
+create table sf_pf_mct_dom_prf
 (
     mct_clc varchar(1) not null,
     mct_id varchar(20) not null,
@@ -1877,9 +1877,9 @@ create table safe.sf_pf_mct_dom_prf
         primary key (mct_clc, mct_id, mct_sub_id, crt_ym)
 );
 
-alter table safe.sf_pf_mct_dom_prf owner to safe;
+alter table sf_pf_mct_dom_prf owner to postgres;
 
-create table safe.sf_pf_mct_ovs_prf
+create table sf_pf_mct_ovs_prf
 (
     mct_id varchar(20) not null,
     crt_y varchar(4) not null,
@@ -1892,9 +1892,9 @@ create table safe.sf_pf_mct_ovs_prf
         primary key (mct_id, crt_y)
 );
 
-alter table safe.sf_pf_mct_ovs_prf owner to safe;
+alter table sf_pf_mct_ovs_prf owner to postgres;
 
-create table safe.sf_pf_tx_prf
+create table sf_pf_tx_prf
 (
     crdid varchar(19) not null,
     tx_dtm varchar(14) not null,
@@ -1907,9 +1907,9 @@ create table safe.sf_pf_tx_prf
         primary key (crdid, tx_dtm, tx_ntv_no)
 );
 
-alter table safe.sf_pf_tx_prf owner to safe;
+alter table sf_pf_tx_prf owner to postgres;
 
-create table safe.sf_rp_rule_pfmc
+create table sf_rp_rule_pfmc
 (
     crt_dt varchar(8) not null,
     rule_id varchar(8) not null,
@@ -1928,9 +1928,9 @@ create table safe.sf_rp_rule_pfmc
         primary key (crt_dt, rule_id, detc_tgt_id)
 );
 
-alter table safe.sf_rp_rule_pfmc owner to safe;
+alter table sf_rp_rule_pfmc owner to postgres;
 
-create table safe.sf_st_blck_mgt
+create table sf_st_blck_mgt
 (
     blck_tgt_tp_clc varchar(2) not null,
     blck_tgt_id varchar(50) not null,
@@ -1949,9 +1949,9 @@ create table safe.sf_st_blck_mgt
         primary key (blck_tgt_tp_clc, blck_tgt_id, reg_seq, blck_clc, blck_acct_tp_clc)
 );
 
-alter table safe.sf_st_blck_mgt owner to safe;
+alter table sf_st_blck_mgt owner to postgres;
 
-create table safe.sf_st_blck_opr_mgt
+create table sf_st_blck_opr_mgt
 (
     req_dt varchar(8) not null,
     req_seq numeric(3) not null,
@@ -1973,9 +1973,9 @@ create table safe.sf_st_blck_opr_mgt
         primary key (req_dt, req_seq)
 );
 
-alter table safe.sf_st_blck_opr_mgt owner to safe;
+alter table sf_st_blck_opr_mgt owner to postgres;
 
-create table safe.sf_st_frd_mgt
+create table sf_st_frd_mgt
 (
     frd_src_clc varchar(2) not null,
     frd_tgt_tp_clc varchar(2) not null,
@@ -1998,9 +1998,9 @@ create table safe.sf_st_frd_mgt
         primary key (frd_src_clc, frd_tgt_tp_clc, frd_tgt_id, reg_seq)
 );
 
-alter table safe.sf_st_frd_mgt owner to safe;
+alter table sf_st_frd_mgt owner to postgres;
 
-create table safe.sf_st_plc_ex_mgt
+create table sf_st_plc_ex_mgt
 (
     plc_biz_clc varchar(1) not null,
     plc_tgt_tp_clc varchar(2) not null,
@@ -2031,9 +2031,9 @@ create table safe.sf_st_plc_ex_mgt
         primary key (plc_biz_clc, plc_tgt_tp_clc, plc_tgt_id, reg_seq)
 );
 
-alter table safe.sf_st_plc_ex_mgt owner to safe;
+alter table sf_st_plc_ex_mgt owner to postgres;
 
-create table safe.sf_st_plc_mgt
+create table sf_st_plc_mgt
 (
     plc_biz_clc varchar(1) not null,
     plc_tgt_tp_clc varchar(2) not null,
@@ -2063,9 +2063,9 @@ create table safe.sf_st_plc_mgt
         primary key (plc_biz_clc, plc_tgt_tp_clc, plc_tgt_id, reg_seq)
 );
 
-alter table safe.sf_st_plc_mgt owner to safe;
+alter table sf_st_plc_mgt owner to postgres;
 
-create table safe.sf_st_plc_var
+create table sf_st_plc_var
 (
     plc_biz_clc varchar(1) not null,
     plc_tgt_tp_clc varchar(2) not null,
@@ -2086,9 +2086,9 @@ create table safe.sf_st_plc_var
         primary key (plc_biz_clc, plc_tgt_tp_clc, plc_tgt_id, plc_var_id, reg_seq)
 );
 
-alter table safe.sf_st_plc_var owner to safe;
+alter table sf_st_plc_var owner to postgres;
 
-create table safe.sf_st_plc_var_mgt
+create table sf_st_plc_var_mgt
 (
     plc_biz_clc varchar(1) not null,
     plc_var_id varchar(7) not null,
@@ -2104,9 +2104,9 @@ create table safe.sf_st_plc_var_mgt
         primary key (plc_biz_clc, plc_var_id)
 );
 
-alter table safe.sf_st_plc_var_mgt owner to safe;
+alter table sf_st_plc_var_mgt owner to postgres;
 
-create table safe.sf_st_rule
+create table sf_st_rule
 (
     rule_id varchar(8) not null,
     rule_ver numeric(3) not null,
@@ -2145,13 +2145,13 @@ create table safe.sf_st_rule
         primary key (rule_id, rule_ver)
 );
 
-comment on table safe.sf_st_rule is '룰관리';
+comment on table sf_st_rule is '룰관리';
 
-comment on column safe.sf_st_rule.rule_id is '룰ID';
+comment on column sf_st_rule.rule_id is '룰ID';
 
-alter table safe.sf_st_rule owner to safe;
+alter table sf_st_rule owner to postgres;
 
-create table safe.sf_st_rule_fnct
+create table sf_st_rule_fnct
 (
     fnct_nm varchar(50) not null
         constraint sf_st_rule_fnct_pk
@@ -2168,9 +2168,9 @@ create table safe.sf_st_rule_fnct
     chg_stm date not null
 );
 
-alter table safe.sf_st_rule_fnct owner to safe;
+alter table sf_st_rule_fnct owner to postgres;
 
-create table safe.sf_st_rule_hst
+create table sf_st_rule_hst
 (
     rule_id varchar(8) not null,
     rule_ver numeric(3) not null,
@@ -2209,9 +2209,9 @@ create table safe.sf_st_rule_hst
         primary key (rule_id, rule_ver, rule_wk_seq)
 );
 
-alter table safe.sf_st_rule_hst owner to safe;
+alter table sf_st_rule_hst owner to postgres;
 
-create table safe.sf_st_rule_opr_mgt
+create table sf_st_rule_opr_mgt
 (
     req_dt varchar(8) not null,
     req_seq numeric(3) not null,
@@ -2232,9 +2232,9 @@ create table safe.sf_st_rule_opr_mgt
         primary key (req_dt, req_seq)
 );
 
-alter table safe.sf_st_rule_opr_mgt owner to safe;
+alter table sf_st_rule_opr_mgt owner to postgres;
 
-create table safe.sf_st_rule_prit_cnd_mgt
+create table sf_st_rule_prit_cnd_mgt
 (
     rule_prit_cnd_id varchar(8) not null
         constraint sf_st_rule_prit_cnd_mgt_pk
@@ -2248,9 +2248,9 @@ create table safe.sf_st_rule_prit_cnd_mgt
     chg_stm date not null
 );
 
-alter table safe.sf_st_rule_prit_cnd_mgt owner to safe;
+alter table sf_st_rule_prit_cnd_mgt owner to postgres;
 
-create table safe.sf_st_rule_var
+create table sf_st_rule_var
 (
     var_id varchar(50) not null
         constraint sf_st_rule_var_pk
@@ -2270,9 +2270,9 @@ create table safe.sf_st_rule_var
     chg_stm date not null
 );
 
-alter table safe.sf_st_rule_var owner to safe;
+alter table sf_st_rule_var owner to postgres;
 
-create table safe.sf_st_rule_var_grp
+create table sf_st_rule_var_grp
 (
     var_grp_id varchar(50) not null
         constraint sf_st_rule_var_grp_pk
@@ -2287,9 +2287,9 @@ create table safe.sf_st_rule_var_grp
     chg_stm date not null
 );
 
-alter table safe.sf_st_rule_var_grp owner to safe;
+alter table sf_st_rule_var_grp owner to postgres;
 
-create table safe.sf_st_ruleset
+create table sf_st_ruleset
 (
     ruleset_id varchar(8) not null
         constraint sf_st_ruleset_pk
@@ -2302,9 +2302,9 @@ create table safe.sf_st_ruleset
     chg_stm date not null
 );
 
-alter table safe.sf_st_ruleset owner to safe;
+alter table sf_st_ruleset owner to postgres;
 
-create table safe.sf_st_ruleset_var
+create table sf_st_ruleset_var
 (
     ruleset_id varchar(8) not null,
     var_id varchar(50) not null,
@@ -2316,9 +2316,9 @@ create table safe.sf_st_ruleset_var
         primary key (ruleset_id, var_id)
 );
 
-alter table safe.sf_st_ruleset_var owner to safe;
+alter table sf_st_ruleset_var owner to postgres;
 
-create table safe.sf_tx_ahnlab_mdti
+create table sf_tx_ahnlab_mdti
 (
     tx_base_ym varchar(255) not null,
     tx_guid_no varchar(255) not null,
@@ -2346,9 +2346,9 @@ create table safe.sf_tx_ahnlab_mdti
         primary key (tx_base_ym, tx_guid_no)
 );
 
-alter table safe.sf_tx_ahnlab_mdti owner to safe;
+alter table sf_tx_ahnlab_mdti owner to postgres;
 
-create table safe.sf_tx_alt
+create table sf_tx_alt
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -2387,9 +2387,9 @@ create table safe.sf_tx_alt
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_tx_alt owner to safe;
+alter table sf_tx_alt owner to postgres;
 
-create table safe.sf_tx_alt_bs
+create table sf_tx_alt_bs
 (
     crdid varchar(19) not null,
     tx_dtm varchar(14) not null,
@@ -2405,9 +2405,9 @@ create table safe.sf_tx_alt_bs
         primary key (crdid, tx_dtm, tx_ntv_no, alt_tp_clc)
 );
 
-alter table safe.sf_tx_alt_bs owner to safe;
+alter table sf_tx_alt_bs owner to postgres;
 
-create table safe.sf_tx_au
+create table sf_tx_au
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -2436,9 +2436,9 @@ create table safe.sf_tx_au
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_tx_au owner to safe;
+alter table sf_tx_au owner to postgres;
 
-create table safe.sf_tx_bamt
+create table sf_tx_bamt
 (
     tx_base_ym varchar(255) not null,
     tx_guid_no varchar(255) not null,
@@ -2463,9 +2463,9 @@ create table safe.sf_tx_bamt
         primary key (tx_base_ym, tx_guid_no)
 );
 
-alter table safe.sf_tx_bamt owner to safe;
+alter table sf_tx_bamt owner to postgres;
 
-create table safe.sf_tx_bnkn
+create table sf_tx_bnkn
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -2516,9 +2516,9 @@ create table safe.sf_tx_bnkn
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_tx_bnkn owner to safe;
+alter table sf_tx_bnkn owner to postgres;
 
-create table safe.sf_tx_contact
+create table sf_tx_contact
 (
     tx_base_ym varchar(255) not null,
     tx_guid_no varchar(255) not null,
@@ -2555,9 +2555,9 @@ create table safe.sf_tx_contact
         primary key (tx_base_ym, tx_guid_no)
 );
 
-alter table safe.sf_tx_contact owner to safe;
+alter table sf_tx_contact owner to postgres;
 
-create table safe.sf_tx_dom_tx_bs
+create table sf_tx_dom_tx_bs
 (
     crdid varchar(19) not null,
     tx_dtm varchar(14) not null,
@@ -2578,9 +2578,9 @@ create table safe.sf_tx_dom_tx_bs
         primary key (crdid, tx_dtm, tx_ntv_no)
 );
 
-alter table safe.sf_tx_dom_tx_bs owner to safe;
+alter table sf_tx_dom_tx_bs owner to postgres;
 
-create table safe.sf_tx_frd
+create table sf_tx_frd
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -2612,9 +2612,9 @@ create table safe.sf_tx_frd
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_tx_frd owner to safe;
+alter table sf_tx_frd owner to postgres;
 
-create table safe.sf_tx_itg
+create table sf_tx_itg
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -2651,9 +2651,9 @@ create table safe.sf_tx_itg
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_tx_itg owner to safe;
+alter table sf_tx_itg owner to postgres;
 
-create table safe.sf_tx_jdmn
+create table sf_tx_jdmn
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -2696,9 +2696,9 @@ create table safe.sf_tx_jdmn
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_tx_jdmn owner to safe;
+alter table sf_tx_jdmn owner to postgres;
 
-create table safe.sf_tx_loan
+create table sf_tx_loan
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -2728,9 +2728,9 @@ create table safe.sf_tx_loan
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_tx_loan owner to safe;
+alter table sf_tx_loan owner to postgres;
 
-create table safe.sf_tx_mbl
+create table sf_tx_mbl
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -2785,9 +2785,9 @@ create table safe.sf_tx_mbl
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_tx_mbl owner to safe;
+alter table sf_tx_mbl owner to postgres;
 
-create table safe.sf_tx_ovs_tx_bs
+create table sf_tx_ovs_tx_bs
 (
     crdid varchar(19) not null,
     tx_dtm varchar(14) not null,
@@ -2806,9 +2806,9 @@ create table safe.sf_tx_ovs_tx_bs
         primary key (crdid, tx_dtm, tx_ntv_no)
 );
 
-alter table safe.sf_tx_ovs_tx_bs owner to safe;
+alter table sf_tx_ovs_tx_bs owner to postgres;
 
-create table safe.sf_tx_pc
+create table sf_tx_pc
 (
     tx_guid_no varchar(36) not null,
     tx_base_ym varchar(6) not null,
@@ -2888,9 +2888,9 @@ create table safe.sf_tx_pc
         primary key (tx_guid_no, tx_base_ym)
 );
 
-alter table safe.sf_tx_pc owner to safe;
+alter table sf_tx_pc owner to postgres;
 
-create table safe.sf_pf_asis_conn_trm
+create table sf_pf_asis_conn_trm
 (
     trm_gthr_clc varchar(6) not null,
     trm_gthr_ntv_id varchar(64) not null,
@@ -2903,11 +2903,11 @@ create table safe.sf_pf_asis_conn_trm
         primary key (trm_gthr_clc, trm_gthr_ntv_id, cst_id)
 );
 
-comment on table safe.sf_pf_asis_conn_trm is '과거수집정보profile';
+comment on table sf_pf_asis_conn_trm is '과거수집정보profile';
 
-alter table safe.sf_pf_asis_conn_trm owner to safe;
+alter table sf_pf_asis_conn_trm owner to postgres;
 
-create table safe.sf_mt_uue_institution_calendar
+create table sf_mt_uue_institution_calendar
 (
     tagt_date varchar(8) not null,
     enty_id varchar(1) default '1'::character varying not null,
@@ -2916,9 +2916,9 @@ create table safe.sf_mt_uue_institution_calendar
         primary key (tagt_date, enty_id)
 );
 
-alter table safe.sf_mt_uue_institution_calendar owner to safe;
+alter table sf_mt_uue_institution_calendar owner to postgres;
 
-create table safe.sf_tx_ahnl_msdk_hst
+create table sf_tx_ahnl_msdk_hst
 (
     hts_id varchar(50) not null,
     chnl_clc varchar(255) not null,
@@ -2935,9 +2935,9 @@ create table safe.sf_tx_ahnl_msdk_hst
         primary key (hts_id, chnl_clc, tgrm_timestamp)
 );
 
-alter table safe.sf_tx_ahnl_msdk_hst owner to safe;
+alter table sf_tx_ahnl_msdk_hst owner to postgres;
 
-create table safe.sf_tx_hts_trm_last_conn
+create table sf_tx_hts_trm_last_conn
 (
     hts_id varchar(19) not null,
     trm_inf_tp_cd varchar(6) not null,
@@ -2952,9 +2952,9 @@ create table safe.sf_tx_hts_trm_last_conn
         primary key (hts_id, trm_inf_tp_cd, chnl_clc)
 );
 
-alter table safe.sf_tx_hts_trm_last_conn owner to safe;
+alter table sf_tx_hts_trm_last_conn owner to postgres;
 
-create table safe.sf_mt_uwb_channel_cd
+create table sf_mt_uwb_channel_cd
 (
     chnl_sect_code varchar(3) not null
         constraint sf_mt_uwb_channel_cd_pk
@@ -2973,9 +2973,9 @@ create table safe.sf_mt_uwb_channel_cd
     prce_date_time date
 );
 
-alter table safe.sf_mt_uwb_channel_cd owner to safe;
+alter table sf_mt_uwb_channel_cd owner to postgres;
 
-create table safe.sf_mt_uwb_com_cd
+create table sf_mt_uwb_com_cd
 (
     cmn_code_no varchar(40) not null
         constraint sf_mt_uwb_com_cd_pk
@@ -2995,9 +2995,9 @@ create table safe.sf_mt_uwb_com_cd
     prce_date_time date
 );
 
-alter table safe.sf_mt_uwb_com_cd owner to safe;
+alter table sf_mt_uwb_com_cd owner to postgres;
 
-create table safe.sf_mt_uwb_com_cd_dtl
+create table sf_mt_uwb_com_cd_dtl
 (
     cmn_code_dtld_no varchar(40) not null
         constraint sf_mt_uwb_com_cd_dtl_pk
@@ -3016,5 +3016,5 @@ create table safe.sf_mt_uwb_com_cd_dtl
     prce_date_time date
 );
 
-alter table safe.sf_mt_uwb_com_cd_dtl owner to safe;
+alter table sf_mt_uwb_com_cd_dtl owner to postgres;
 
