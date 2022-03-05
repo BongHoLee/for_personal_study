@@ -14,19 +14,12 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.DelegatingAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.session.Session;
-import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
-import org.springframework.session.security.SpringSessionBackedSessionRegistry;
-
-import java.util.LinkedHashMap;
 
 @Configuration
 @Order(0)
@@ -34,11 +27,6 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailsService userDetailsService;
-
-    @Autowired
-    private JdbcIndexedSessionRepository jdbcIndexedSessionRepository;
-
-
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -71,7 +59,7 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationProvider ajaxAuthenticationProvider() {
-        return new AjaxAuthenticationProvider(userDetailsService, passwordEncoder(), sessionRegistry());
+        return new AjaxAuthenticationProvider(userDetailsService, passwordEncoder());
     }
 
     // Filter를 등록하면서 이 필터가 사용할 AuthenticationManager를 등록해줘야 한다.
@@ -93,19 +81,4 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationFailureHandler ajaxAuthenticationFailureHandler() {
         return new AjaxAuthenticationFailureHandler();
     }
-
-    @Bean
-    public AuthenticationFailureHandler delegatingAuthenticationFailureHandler() {
-        LinkedHashMap<Class<? extends AuthenticationException>, AuthenticationFailureHandler> handlers = new LinkedHashMap<>();
-
-    }
-
-    // Session 다루는데 필요
-    @Bean
-    public SpringSessionBackedSessionRegistry<? extends Session> sessionRegistry() {
-        return new SpringSessionBackedSessionRegistry<>(jdbcIndexedSessionRepository);
-    }
-
-
-
 }

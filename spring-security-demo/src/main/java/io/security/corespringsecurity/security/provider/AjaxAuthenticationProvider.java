@@ -17,16 +17,14 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-    private final SessionRegistry sessionRegistry;
 
     @Autowired
     private JdbcIndexedSessionRepository repository;
 
 
-    public AjaxAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder, SessionRegistry sessionRegistry) {
+    public AjaxAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
-        this.sessionRegistry = sessionRegistry;
     }
 
     // authenticate 메서드는 AuthenticationManager가 호출
