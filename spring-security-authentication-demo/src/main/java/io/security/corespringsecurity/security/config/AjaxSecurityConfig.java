@@ -5,11 +5,9 @@ import io.security.corespringsecurity.security.filter.AjaxLoginProcessingFilter;
 import io.security.corespringsecurity.security.handler.AjaxAccessDeniedHandler;
 import io.security.corespringsecurity.security.handler.AjaxAuthenticationFailureHandler;
 import io.security.corespringsecurity.security.handler.AjaxAuthenticationSuccessHandler;
-import io.security.corespringsecurity.security.provider.AjaxAuthenticationProvider;
+import io.security.corespringsecurity.security.provider.AjaxAuthenticationProvider_OLD;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,8 +19,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration
-@Order(0)
+
 public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -59,7 +56,7 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationProvider ajaxAuthenticationProvider() {
-        return new AjaxAuthenticationProvider(userDetailsService, passwordEncoder());
+        return new AjaxAuthenticationProvider_OLD(userDetailsService, passwordEncoder());
     }
 
     // Filter를 등록하면서 이 필터가 사용할 AuthenticationManager를 등록해줘야 한다.
