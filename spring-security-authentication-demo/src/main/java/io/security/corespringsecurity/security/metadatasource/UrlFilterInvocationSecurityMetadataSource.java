@@ -1,6 +1,8 @@
 package io.security.corespringsecurity.security.metadatasource;
 
+import io.security.corespringsecurity.service.SecurityResourceService;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -14,9 +16,11 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
 
     // 요청 리소스 : 권한 정보를 담는 Map
     private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
+    private SecurityResourceService securityResourceService;
 
-    public UrlFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap) {
+    public UrlFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap, SecurityResourceService securityResourceService) {
         this.requestMap = requestMap;
+        this.securityResourceService = securityResourceService;
     }
 
     // 실제로 리소스 : 권한 매칭 정보를 가져오는, 구현이 필요한 메서드
@@ -53,5 +57,18 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
     @Override
     public boolean supports(Class<?> clazz) {
         return FilterInvocation.class.isAssignableFrom(clazz);
+    }
+
+    // DB에 업데이트된 리소스 - 권한 정보를 반영하기 위한 메서드
+    public void reload() {
+        LinkedHashMap<RequestMatcher, List<ConfigAttribute>> reloaded = securityResourceService.getResourceList();
+        Iterator<Map.Entry<RequestMatcher, List<ConfigAttribute>>> iterator = reloaded.entrySet().iterator();
+
+        requestMap.clear();
+
+        while(iterator.hasNext()) {
+            Map.Entry<RequestMatcher, List<ConfigAttribute>> entry = iterator.next();
+            requestMap.put(entry.getKey(), entry.getValue());
+        }
     }
 }
