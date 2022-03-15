@@ -1,5 +1,6 @@
 package io.security.corespringsecurity.security.config;
 
+import io.security.corespringsecurity.handler.CustomAccessDeniedHandler;
 import io.security.corespringsecurity.handler.CustomAuthenticationSuccessHandler;
 import io.security.corespringsecurity.security.provider.CustomAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
@@ -39,6 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationFailureHandler failureHandler;
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -61,6 +64,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new CustomAuthenticationProvider(userDetailsService, passwordEncoder());
     }
 
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
+        accessDeniedHandler.setErrorPage("/denied");
+
+        return accessDeniedHandler;
+    }
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
@@ -72,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 우선 각 페이지와 페이지에 접근할 수 있는 권한을 설정
         http
                 .authorizeRequests()
-                .antMatchers("/", "/users", "user/login/**", "/login*").permitAll()
+                .antMatchers("/", "/users", "user/login/**", "/login*", "/denied*").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
@@ -86,6 +97,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
                 .permitAll()
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler())
                 ;
 
     }
