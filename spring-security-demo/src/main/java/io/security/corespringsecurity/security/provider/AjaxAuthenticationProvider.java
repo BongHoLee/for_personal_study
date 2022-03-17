@@ -1,26 +1,41 @@
 package io.security.corespringsecurity.security.provider;
 
+import io.security.corespringsecurity.domain.Account;
 import io.security.corespringsecurity.security.common.FormWebAuthenticationDetails;
 import io.security.corespringsecurity.security.service.AccountContext;
 import io.security.corespringsecurity.security.token.AjaxAuthenticationToken;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
+
+import java.util.List;
+import java.util.Map;
 
 
 public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final SessionRegistry sessionRegistry;
 
-    public AjaxAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    @Autowired
+    private JdbcIndexedSessionRepository repository;
+
+
+    public AjaxAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder, SessionRegistry sessionRegistry) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
+        this.sessionRegistry = sessionRegistry;
     }
 
     // authenticate 메서드는 AuthenticationManager가 호출
@@ -32,6 +47,7 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = (String) authentication.getCredentials();
 
+        repository.findByPrincipalName("Account(id=1, username=user, password=$2a$10$oEZcwsRDsHP4SxjFdDD/cOgUtJl1wtDWMUqncKD99sxyNYYEY8qhi, email=leebongho9204@gmail.com, age=31, role=ROLE_USER)");
         // UserDetailsService로부터 AccountContext를 가져온다.
         AccountContext accountContext = (AccountContext) userDetailsService.loadUserByUsername(username);
 
@@ -39,6 +55,14 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
         if (!passwordEncoder.matches(password, accountContext.getAccount().getPassword())) {
             throw new BadCredentialsException("BadCredentialsException");
         }
+
+        for (Object principal : sessionRegistry.getAllPrincipals()) {
+            Account each = (Account) principal;
+            each.getAge();
+            List<SessionInformation> allSessions = sessionRegistry.getAllSessions(principal, false);
+            allSessions.get(0);
+        }
+
 
 
         // 클라이언트가 전달한 디테일 정보를 가져와서 검증 처리
@@ -51,6 +75,11 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
         // 인증에 성공하게 되면 Token을 만들어서 반환.
         // 비밀번호는 민감 정보이기 때문에 null로 전달
+        // 이 정보가 이제 인증이 완료된 Authentication 객체
+        // principal이 session에 저장.
+
+
+
         return new AjaxAuthenticationToken(
                 accountContext.getAccount(),
                 null,
