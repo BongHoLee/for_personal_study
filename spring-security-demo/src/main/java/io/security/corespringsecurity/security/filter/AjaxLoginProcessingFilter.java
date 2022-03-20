@@ -35,6 +35,8 @@ public class AjaxLoginProcessingFilter extends AbstractAuthenticationProcessingF
 
         // HTTP REQUEST BODY부를 읽어서 AccuontDto 타입으로 매핑
         AccountDto accountDto = mapper.readValue(request.getReader(), AccountDto.class);
+        request.setAttribute("userId", accountDto.getUsername());
+
         if (!StringUtils.hasText(accountDto.getUsername()) || !StringUtils.hasText(accountDto.getPassword())) {
             throw new IllegalArgumentException("Username or Password is not empty");
         }
