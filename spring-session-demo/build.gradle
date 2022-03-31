@@ -1,0 +1,54 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.5'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.session:spring-session-core'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
+
+//    // https://mvnrepository.com/artifact/org.springframework.session/spring-session-jdbc
+//    implementation group: 'org.springframework.session', name: 'spring-session-jdbc', version: '2.3.0.RELEASE'
+
+
+    // https://mvnrepository.com/artifact/io.lettuce/lettuce-core
+    implementation("io.lettuce:lettuce-core:6.1.1.RELEASE")
+
+
+    // https://mvnrepository.com/artifact/org.springframework.session/spring-session-data-redis
+    implementation("org.springframework.session:spring-session-data-redis:2.3.3.RELEASE")
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
