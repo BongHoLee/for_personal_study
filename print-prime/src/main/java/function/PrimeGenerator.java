@@ -1,9 +1,6 @@
 package function;
 
 public class PrimeGenerator {
-
-    private final int numberOfPrimes;
-    private final int[] primes;
     private final int ordmax = 30;
     private final int[] multiples = new int[ordmax + 1];
     private int candidate;
@@ -13,15 +10,11 @@ public class PrimeGenerator {
     private int square;
     private int n;
 
-    public PrimeGenerator(int numberOfPrimes) {
-        this.numberOfPrimes = numberOfPrimes;
-        this.primes = new int[numberOfPrimes + 1];
-    }
 
-    public int[] generatePrimeNumbers() {
+    public int[] generatePrimeNumbers(int numberOfPrimes) {
+        int[] primes = new int[numberOfPrimes + 1];
         candidate = 1;
         primeIndex = 1;
-        primes[1] = 2;
         ord = 2;
         square = 9;
         while (primeIndex < numberOfPrimes) {
