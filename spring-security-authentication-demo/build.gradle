@@ -56,3 +56,15 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+task copyToTemp {
+    doLast {
+        println configurations.getByName('runtimeClasspath')
+    }
+    copy {
+        into "/Users/bongholee/dev/tempClasspath/dependencies"
+        from configurations.getByName('runtimeClasspath')
+        
+    }
+
+}
