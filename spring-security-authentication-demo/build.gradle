@@ -64,7 +64,7 @@ task copyToTemp {
     copy {
         into "/Users/bongholee/dev/tempClasspath/dependencies"
         from configurations.getByName('runtimeClasspath')
-        
+
     }
 
 }
