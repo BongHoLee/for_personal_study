@@ -1,6 +1,6 @@
 package function;
 
-class PrintPrimeHelper {
+public class PrimeGenerator {
 
     private final int numberOfPrimes;
     private final int[] primes;
@@ -13,12 +13,12 @@ class PrintPrimeHelper {
     private int square;
     private int n;
 
-    public PrintPrimeHelper(int numberOfPrimes) {
+    public PrimeGenerator(int numberOfPrimes) {
         this.numberOfPrimes = numberOfPrimes;
         this.primes = new int[numberOfPrimes + 1];
     }
 
-    public int[] invoke() {
+    public int[] generatePrimeNumbers() {
         candidate = 1;
         primeIndex = 1;
         primes[1] = 2;

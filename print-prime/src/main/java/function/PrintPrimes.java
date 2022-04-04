@@ -4,10 +4,10 @@ public class PrintPrimes {
     private final int numberOfPrimes = 1000;
 
     public void main(String[] args) {
-        PrintPrimeHelper printPrimeHelper = new PrintPrimeHelper(numberOfPrimes);
+        PrimeGenerator primeGenerator = new PrimeGenerator(numberOfPrimes);
         NumberPrinter numberPrinter = new NumberPrinter();
 
-        int[] primes = printPrimeHelper.invoke();
+        int[] primes = primeGenerator.generatePrimeNumbers();
         numberPrinter.printNumber(numberOfPrimes, primes);
     }
 
