@@ -9,14 +9,9 @@ public class PrintPrimes {
 
         private final int numberOfPrimes = 1000;
         private final int[] primes = new int[numberOfPrimes + 1];
-        private final int linesPerPage = 50;
-        private final int columns = 4;
         private final int ordmax = 30;
         private final int[] multiples = new int[ordmax + 1];
-        private int pagenumber;
-        private int pageoffset;
         private int rowoffset;
-        private int column;
         private int candidate;
         private int primeIndex;
         private boolean possiblyPrime;
@@ -51,19 +46,22 @@ public class PrintPrimes {
                 primeIndex = primeIndex + 1;
                 primes[primeIndex] = candidate;
             }
-            
-            printNumbers();
+
+            printNumbers(numberOfPrimes, primes);
         }
 
-        private void printNumbers() {
-            pagenumber = 1;
-            pageoffset = 1;
+        private void printNumbers(int numberOfPrimes, int[] primes) {
+            int pagenumber = 1;
+            int pageoffset = 1;
+            int linesPerPage = 50;
+            int columns = 4;
+
             while (pageoffset <= numberOfPrimes) {
                 System.out.println("The First " + numberOfPrimes +
                         " Prime Numbers --- Page " + pagenumber);
                 System.out.println("");
                 for (rowoffset = pageoffset; rowoffset < pageoffset + linesPerPage; rowoffset++) {
-                    for (column = 0; column < columns; column++)
+                    for (int column = 0; column < columns; column++)
                         if (rowoffset + column * linesPerPage <= numberOfPrimes)
                             System.out.format("%10d", primes[rowoffset + column * linesPerPage]);
                     System.out.println("");
