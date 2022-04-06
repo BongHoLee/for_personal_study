@@ -1,13 +1,16 @@
 package function;
 
 public class PrintPrimes {
+    private final int numberOfPrimes = 1000;
+
     public void main(String[] args) {
-        new PrintPrimeHelper().invoke();
+        PrintPrimeHelper printPrimeHelper = new PrintPrimeHelper();
+        int[] primes = printPrimeHelper.invoke();
+        printPrimeHelper.printNumbers(numberOfPrimes, primes);
     }
 
-    private class PrintPrimeHelper {
 
-        private final int numberOfPrimes = 1000;
+    private class PrintPrimeHelper {
         private final int[] primes = new int[numberOfPrimes + 1];
         private final int ordmax = 30;
         private final int[] multiples = new int[ordmax + 1];
@@ -19,7 +22,7 @@ public class PrintPrimes {
         private int square;
         private int n;
 
-        private void invoke() {
+        private int[] invoke() {
             candidate = 1;
             primeIndex = 1;
             primes[1] = 2;
@@ -47,7 +50,7 @@ public class PrintPrimes {
                 primes[primeIndex] = candidate;
             }
 
-            printNumbers(numberOfPrimes, primes);
+            return primes;
         }
 
         private void printNumbers(int numberOfPrimes, int[] primes) {
