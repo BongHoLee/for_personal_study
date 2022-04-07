@@ -7,23 +7,24 @@ public class PrintPrimes {
 
     private class PrintPrimeHelper {
 
+        private final int numberOfPrimes = 1000;
+        private final int[] primes = new int[numberOfPrimes + 1];
+        private final int linesPerPage = 50;
+        private final int columns = 4;
+        private final int ordmax = 30;
+        private final int[] multiples = new int[ordmax + 1];
+        private int pagenumber;
+        private int pageoffset;
+        private int rowoffset;
+        private int column;
+        private int candidate;
+        private int primeIndex;
+        private boolean possiblyPrime;
+        private int ord;
+        private int square;
+        private int n;
+
         private void invoke() {
-            final int numberOfPrimes = 1000;
-            final int linesPerPage = 50;
-            final int columns = 4;
-            final int ordmax = 30;
-            int primes[] = new int[numberOfPrimes + 1];
-            int pagenumber;
-            int pageoffset;
-            int rowoffset;
-            int column;
-            int candidate;
-            int primeIndex;
-            boolean possiblyPrime;
-            int ord;
-            int square;
-            int n;
-            int multiples[] = new int[ordmax + 1];
             candidate = 1;
             primeIndex = 1;
             primes[1] = 2;
