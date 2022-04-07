@@ -31,7 +31,7 @@ public class FileContentComparator {
 
     @Test
     public void makeSureMatchesGold() {
-        PrintPrimes.main(new String[0]);
+        new PrintPrimes().main(new String[0]);
 
         try {
             BufferedReader lead = new BufferedReader(new FileReader("lead"));
