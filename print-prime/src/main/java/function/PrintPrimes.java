@@ -5,9 +5,10 @@ public class PrintPrimes {
 
     public void main(String[] args) {
         PrintPrimeHelper printPrimeHelper = new PrintPrimeHelper(numberOfPrimes);
+        NumberPrinter numberPrinter = new NumberPrinter();
+
         int[] primes = printPrimeHelper.invoke();
-        NumberPrinter numberPrinter = new NumberPrinter(numberOfPrimes, primes);
-        numberPrinter.printNumber();
+        numberPrinter.printNumber(numberOfPrimes, primes);
     }
 
 

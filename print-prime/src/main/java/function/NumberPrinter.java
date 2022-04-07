@@ -2,15 +2,8 @@ package function;
 
 class NumberPrinter {
 
-    private int numberOfPrimes;
-    private int[] primes;
 
-    public NumberPrinter(int numberOfPrimes, int... primes) {
-        this.numberOfPrimes = numberOfPrimes;
-        this.primes = primes;
-    }
-
-    public void printNumber() {
+    public void printNumber(int numberOfPrimes, int[] primes) {
         int pagenumber = 1;
         int pageoffset = 1;
         int linesPerPage = 50;
