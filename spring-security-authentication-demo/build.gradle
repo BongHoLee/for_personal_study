@@ -2,11 +2,13 @@ plugins {
     id 'org.springframework.boot' version '2.6.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'maven-publish'
 }
 
 group = 'io.security'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+
 
 configurations {
     compileOnly {
@@ -16,6 +18,17 @@ configurations {
 
 repositories {
     mavenCentral()
+
+    maven {
+        url('/Users/bongholee/tempLib')
+    }
+
+    flatDir {
+        dirs 'lib'
+    }
+    flatDir {
+        dirs 'lib1', 'lib2'
+    }
 }
 
 dependencies {
@@ -57,14 +70,41 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-task copyToTemp {
-    doLast {
-        println configurations.getByName('runtimeClasspath')
-    }
-    copy {
-        into "/Users/bongholee/dev/tempClasspath/dependencies"
-        from configurations.getByName('runtimeClasspath')
-
-    }
-
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
 }
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url("/Users/bongholee/tempLib")
+        }
+    }
+}
+
+configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.eachWithIndex { resolvedArtifact, n ->
+    println resolvedArtifact
+
+    project.publishing {
+        publications {
+            "maven${n}"(MavenPublication) {
+                artifact(resolvedArtifact.file) {
+                    groupId = resolvedArtifact.moduleVersion.id.group
+                    artifactId = resolvedArtifact.moduleVersion.id.name
+                    version = resolvedArtifact.moduleVersion.id.version
+                    classifier = resolvedArtifact.classifier
+                }
+            }
+        }
+    }
+}
+
+
+
+
