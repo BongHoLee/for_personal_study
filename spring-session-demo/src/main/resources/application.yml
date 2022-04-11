@@ -1,0 +1,22 @@
+spring:
+#  redis:
+#    host: localhost
+#    port: 6379
+#
+#    lettuce:
+#      pool:
+#        min-idle: 5
+#        max-idle: 10
+#        max-active: 8
+#        max-wait: 1ms
+
+  session:
+    store-type: jdbc
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://192.168.57.251:5413/rhea?currentSchema=safe
+    username: safe
+    password: kcb1234!
