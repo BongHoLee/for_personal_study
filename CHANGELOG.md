@@ -1,0 +1,74 @@
+- enum refactoring
+- enum-refactoring-demo 기본 환경 구성
+- 불필요 repositories 제거
+- Merge branch 'master' of https://github.com/BongHoLee/ForStudyTestCode
+- gradle runtimeClasspath dependencies 아티팩트 배포
+- 14. 함수 추출
+- 13. PrimeGenerator의 필드 변수를 메서드 파라미터로 변경
+- 12. 클래스, 메서드 명 변경
+- 10. 생성자 파라미터에서 메서드 파라미터로 변경 - 호출 시 마다 파라미터 값이 변경될 수 있음
+- 7. 책임이 다른 메서드 별도의 클래스로 추출
+- 7. invoke 메서드 반환 타입을 변경하고 클라이언트가 각 메서드를 호출하도록 변경
+- 5. 하나의 함수에서만 필요한 변수들은 필드에서 로컬 변수 or 메서드 파라미터로 변경
+- 4.extract method - printNumbers 메서드 분리
+- 3. extract field - 로컬 변수들을 우선 클래스 필드로 추출한다. - 이후에 필요에 따라 로컬 변수로 이동하는 등의 조치를 취하는게 더 낫다.
+- 2. remove static - static은 의존성 관리가 어렵다. 최대한 제거하자.
+- 1. Extract Method Object - IDE 도움을 받아 함수를 클래스로 추출 - 일련의 변수들을 갖는 큰 함수는 '하나 이상의 클래스'가 숨어있는것 - 그 숨어있는 클래스를 추출 - 당장에 적절한 클래스 이름은 생각나지 않는다. 이후에 코드가 정제된 모습을 보면 더 적합한 이름이 떠오를테니 그 때 변경하기로 하고 지금은 'PrintPrimeHelper'로 둔다.
+- 0. Add Characterization Test - 파일 비교 테스트 추가.
+- print-prime 프로젝트 생성 - 함수 쪼개기 연습 2
+- fitness-example 추가 및 함수 쪼개기 연습
+- runtimeClasspath jar 외부 배포 script 구성
+- tt
+- 실시간 인가 기능 반영
+- Map 기반 인가 프로세스 구현
+- update
+- Merge branch 'master' of https://github.com/BongHoLee/ForStudyTestCode
+- update
+- update
+- spring-security 인가 기본 틀 추가
+- spring-security-demo 이름 변경
+- test update
+- SafeAuthentication 적용 배제
+- SafeAuthentication 적용을 위한 코드 생성
+- postgresql dml 파일 추가
+- postgresql ddl 파일 추가
+- Spring Session 적용 방안 검토중
+- Merge branch 'master' of https://github.com/BongHoLee/ForStudyTestCode
+- Spring Session 적용 방안 검토중
+- postgresql 계정 정보 변경
+- update
+- ajax login, home http 수정
+- 인증, 인가 예외 처리 AuthenticationEntryPoint, AccessDeniedHandler 구현
+- AuthenticationSuccess, AuthenticationFailure 핸들러 구현
+- Ajax 인증 처리를 위한 AuthenticationProvider 구현
+- Ajax 인증 필터 AjaxLoginProcessingFilter 구현
+- 인증 이후 인가 거부 (인증 거부) AccessDeniedHander 구현
+- AuthenticationFailureHandler 구현
+- CustomAuthenticationSuccessHandler 구현
+- AuthenticationDetailsSource, AuthenticationDetails 적용
+- spring session 적용
+- logout 기능 추가
+- CustomAuthenticationProvider를 이용한 인증 검증
+- db 연동 회원가입 - UserDetailsServce, UserDetails 활용
+- db 연동 회원가입 예제 완료
+- WebIgnore을 이용한 정적 리소스 Security Filter 보안 해제
+- lect1 security impl
+- lect1 security configuration
+- security lecture project init
+- security demo remove
+- init spring-security-demo project
+- sql parsing getValue test
+- sql parser test
+- project init
+- Merge branch 'master' of https://github.com/BongHoLee/ForStudyTestCode
+- 싱글톤/프로토타입 함께 사용 시 프로토타입 상태 확인 테스트 이후 프록시 프로토타입 상태 확인 테스트 진행 예정
+- 프로토타입 스코프 빈 프록시로 생성 및 메시지 전송 때 마다 새로운 프로토타입 생성 확인!
+- Merge branch 'master' of https://github.com/BongHoLee/ForStudyTestCode
+- update
+- 싱글톤/프로토타입 함께 사용 시 프로토타입 상태 확인 테스트 이후 프록시 프로토타입 상태 확인 테스트 진행 예정
+- 빈 스코프 테스트 프로젝트 init
+- ehcache 설정 파일 생성 및 기본 설정 완료 - @Cacheable 구현 필요.
+- h2 db 사용 환경 설정 및 연결 테스트 코드 작성 통과 완료.
+- Spring-cache 사용 환경 설정
+- gradle kotlin DSL로 변경
+- 기본 프로젝트 생성 완료 (Gradle Project)
