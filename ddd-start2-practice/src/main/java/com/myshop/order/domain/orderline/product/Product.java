@@ -1,4 +1,6 @@
-package com.myshop.order.domain;
+package com.myshop.order.domain.orderline.product;
+
+import com.myshop.order.domain.Price;
 
 /**
  * Class desc.

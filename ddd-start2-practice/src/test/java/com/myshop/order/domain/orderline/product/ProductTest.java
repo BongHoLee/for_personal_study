@@ -1,8 +1,10 @@
-package com.myshop.order.domain;
+package com.myshop.order.domain.orderline.product;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.myshop.order.domain.orderline.product.ProductId;
+import com.myshop.order.domain.orderline.product.ProductName;
 import org.junit.jupiter.api.Test;
 
 /**

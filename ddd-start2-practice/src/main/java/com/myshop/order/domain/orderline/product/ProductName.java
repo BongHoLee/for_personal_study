@@ -1,4 +1,4 @@
-package com.myshop.order.domain;
+package com.myshop.order.domain.orderline.product;
 
 import java.util.Objects;
 
