@@ -41,6 +41,4 @@ public class QuantityTest {
         Quantity result = firstQuantity.add(secondQuantity);
         assertThat(result.getValue()).isEqualTo(firstValue + secondValue);
     }
-
-
 }

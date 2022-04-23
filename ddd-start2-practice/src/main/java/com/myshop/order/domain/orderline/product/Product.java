@@ -20,4 +20,7 @@ public class Product {
         this.price = price;
     }
 
+    public Price getPrice() {
+        return price;
+    }
 }
