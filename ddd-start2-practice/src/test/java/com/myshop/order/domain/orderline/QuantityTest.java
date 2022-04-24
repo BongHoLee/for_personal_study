@@ -31,6 +31,14 @@ public class QuantityTest {
     }
 
     @Test
+    void zero_value일시_예외발생_반환_테스트() {
+        long value = 0;
+        assertThrows(IllegalArgumentException.class, () -> {
+            Quantity.of(value);
+        });
+    }
+
+    @Test
     void 값_합산_계산_테스트() {
         long firstValue = 1;
         long secondValue = 2;

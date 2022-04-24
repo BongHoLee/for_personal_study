@@ -3,7 +3,7 @@ package com.myshop.order.domain.orderline;
 import java.util.Objects;
 
 public class Quantity {
-    private static final long MIN_VALUE = 0;
+    private static final long MIN_VALUE = 1;
     private final long value;
 
     private Quantity(long value) {
