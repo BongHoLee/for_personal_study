@@ -1,12 +1,12 @@
-package com.myshop.order.domain.receiver;
+package com.myshop.order.domain.shipinfo;
 
 import java.util.Objects;
 
-public class Receiver {
+public class ShipInfo {
     private final ReceiverName receiverName;
     private final ReceiverAddress receiverAddress;
 
-    public Receiver(ReceiverName receiverName, ReceiverAddress receiverAddress) {
+    public ShipInfo(ReceiverName receiverName, ReceiverAddress receiverAddress) {
         checkValidation(receiverName, receiverAddress);
         this.receiverName = receiverName;
         this.receiverAddress = receiverAddress;
@@ -34,9 +34,9 @@ public class Receiver {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Receiver receiver = (Receiver) o;
-        return getReceiverName().equals(receiver.getReceiverName()) && getReceiverAddress().equals(
-                receiver.getReceiverAddress());
+        ShipInfo shipInfo = (ShipInfo) o;
+        return getReceiverName().equals(shipInfo.getReceiverName()) && getReceiverAddress().equals(
+                shipInfo.getReceiverAddress());
     }
 
     @Override

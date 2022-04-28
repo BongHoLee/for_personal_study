@@ -1,4 +1,4 @@
-package com.myshop.order.domain.receiver;
+package com.myshop.order.domain.shipinfo;
 
 import java.util.Objects;
 
