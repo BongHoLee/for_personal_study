@@ -11,7 +11,8 @@ public class ShipInfoTest {
     void createTest() {
         new ShipInfo(
                 new ReceiverName("leebongho"),
-                new ReceiverAddress("신길로 45길")
+                new ReceiverAddress("신길로 45길"),
+                new ReceiverTel("010-5566-5081")
         );
     }
 
@@ -20,12 +21,14 @@ public class ShipInfoTest {
 
         ShipInfo origin = new ShipInfo(
                 new ReceiverName("leebongho"),
-                new ReceiverAddress("신길로 45길")
+                new ReceiverAddress("신길로 45길"),
+                new ReceiverTel("010-5566-5081")
         );
 
         ShipInfo target = new ShipInfo(
                 new ReceiverName("leebongho"),
-                new ReceiverAddress("신길로 45길")
+                new ReceiverAddress("신길로 45길"),
+                new ReceiverTel("010-5566-5081")
         );
 
         assertThat(origin).isEqualTo(target);
@@ -36,12 +39,14 @@ public class ShipInfoTest {
 
         ShipInfo origin = new ShipInfo(
                 new ReceiverName("leebongho"),
-                new ReceiverAddress("신길로 45길1")
+                new ReceiverAddress("신길로 45길1"),
+                new ReceiverTel("010-5566-5081")
         );
 
         ShipInfo target = new ShipInfo(
                 new ReceiverName("leebongho"),
-                new ReceiverAddress("신길로 45길")
+                new ReceiverAddress("신길로 45길"),
+                new ReceiverTel("010-5566-5081")
         );
 
         assertThat(origin).isNotEqualTo(target);
@@ -52,21 +57,24 @@ public class ShipInfoTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new ShipInfo(
                     new ReceiverName("leebongho"),
-                    null
+                    null,
+                    new ReceiverTel("010-5566-5081")
             );
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
             new ShipInfo(
                     null,
-                    new ReceiverAddress("신길로 45길")
+                    new ReceiverAddress("신길로 45길"),
+                    new ReceiverTel("010-5566-5081")
             );
         });
 
         assertThrows(IllegalArgumentException.class, () -> {
             new ShipInfo(
                     null,
-                    null
+                    null,
+                    new ReceiverTel("010-5566-5081")
             );
         });
     }
