@@ -35,6 +35,10 @@ public class Price {
         return this.value;
     }
 
+    public long compareWith(Price target) {
+        return value - target.value;
+    }
+
 
     @Override
     public boolean equals(Object o) {

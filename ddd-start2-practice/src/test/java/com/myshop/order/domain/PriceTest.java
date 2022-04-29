@@ -39,4 +39,20 @@ public class PriceTest {
             Price.of(minusValue);
         });
     }
+
+    @Test
+    void 비교_가격_더_작은_경우_테스트() {
+        Price origin = Price.of(100);
+        Price target = Price.of(200);
+
+        assertThat(origin.compareWith(target)).isEqualTo(-100);
+    }
+
+    @Test
+    void 비교_가격_더_큰_경우_테스트() {
+        Price origin = Price.of(200);
+        Price target = Price.of(100);
+
+        assertThat(origin.compareWith(target)).isEqualTo(100);
+    }
 }
