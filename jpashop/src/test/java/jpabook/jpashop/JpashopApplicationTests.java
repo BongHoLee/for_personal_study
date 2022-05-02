@@ -31,7 +31,12 @@ class JpashopApplicationTests {
         assertThat(findMember.getId()).isEqualTo(member.getId());
         assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
 
+        // Q : 이거의 결과는?
+        assertThat(findMember).isEqualTo(member);
+
+        // 같은 Transaction 내에서 동작하면 동일한 영속성 컨텍스트를 갖는다.
+        // 동일한 영속성 컨텍스트는 ID가 같으면 동일한 인스턴스로 식별한다.
+        // 따라서 Member에 equalsTo, hash를 오버라이딩 하지 않았음에도 isEqualsTo = true 인
+
     }
-
-
 }
