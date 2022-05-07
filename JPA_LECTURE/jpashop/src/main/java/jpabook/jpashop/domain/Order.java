@@ -18,13 +18,16 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.catalina.valves.HealthCheckValve;
 
 @Entity
 @Table(name = "orders")
-@Getter @Setter
+@Getter
+@Setter
 public class Order {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "order_id")
     private Long id;
 
@@ -61,5 +64,43 @@ public class Order {
     public void setDelivery(Delivery delivery) {
         this.delivery = delivery;
         delivery.setOrder(this);
+    }
+
+    // === 생성 메서드 === //
+    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        for (OrderItem orderItem : orderItems) {
+            order.addOrderItem(orderItem);
+        }
+        order.setStatus(OrderStatus.ORDER);
+        order.setOrderDate(LocalDateTime.now());
+
+        return order;
+    }
+
+    // === 비즈니스 로직 === //
+    public void cancel() {
+        if (delivery.getStatus() == DeliverStatus.COMP) {
+            throw new IllegalStateException("이미 배송 완료된 상품은 취소가 불가능");
+        }
+        setStatus(OrderStatus.CANCEL);
+
+        for (OrderItem orderItem : orderItems) {
+            orderItem.cancel();
+        }
+    }
+
+    // ==== 조회 로직 ==== //
+    /**
+     * 전체 가격 조회 로직
+     */
+    public Long getTotalPrice() {
+        Long totalPrice = 0L;
+        for (OrderItem orderItem : orderItems) {
+            totalPrice += orderItem.getTotalPrice();
+        }
+        return totalPrice;
     }
 }
