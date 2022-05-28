@@ -32,4 +32,6 @@ public class Member {
     // 따라서 mappedby로 선언 (Order 필드에 있는 member의 거울일 뿐이야 -> 읽기 전용, 이걸 변경한다고 Order의 F.K가 변경되지 않는다.)
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
+
+
 }
