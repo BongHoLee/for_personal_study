@@ -20,6 +20,13 @@ public class OrderRepository {
         return em.find(Order.class, id);
     }
 
-    // public List<Order> findAll(OrderSearch, orderSearch)
+    // 동적쿼리가 필요한 부분이다. QueryDSL을 사용하는게 가장 좋다.
+    public List<Order> findAll(OrderSearch orderSearch) {
+        String jpql = "select o from Order o join o.member m";
+
+        em.createQuery(jpql, Order.class)
+                .setMaxResults(1000)
+                .getResultList();
+    }
 
 }
