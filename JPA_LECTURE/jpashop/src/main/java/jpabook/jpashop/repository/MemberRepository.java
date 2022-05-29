@@ -2,17 +2,18 @@ package jpabook.jpashop.repository;
 
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import jpabook.jpashop.domain.Member;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class MemberRepository {
 
-    @PersistenceContext
-    private EntityManager em;
+    private final EntityManager em;
 
     public void save (Member member) {
+        validationDuplicatedMember(member);
         em.persist(member);
     }
 
@@ -32,5 +33,12 @@ public class MemberRepository {
         return em.createQuery("select m from Member m where m.name = :name", Member.class)
                 .setParameter("name", name)
                 .getResultList();
+    }
+
+    private void validationDuplicatedMember(Member member) {
+        List<Member> findMembers = findByName(member.getName());
+        if (!findMembers.isEmpty()) {
+            throw new IllegalStateException("이미 존재하는 회원입니다.");
+        }
     }
 }
