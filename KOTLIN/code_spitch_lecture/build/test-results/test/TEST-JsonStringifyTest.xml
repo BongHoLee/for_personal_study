@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="JsonStringifyTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2022-06-07T14:11:19" hostname="Bonghoui-MacBookPro.local" time="0.157">
-  <properties/>
-  <testcase name="test()" classname="JsonStringifyTest" time="0.157"/>
-  <system-out><![CDATA[{id:100,name:leebongho,}
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
