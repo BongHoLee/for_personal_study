@@ -6,12 +6,23 @@ fun <T: Any> stringify(target: T): String {
     builder.append("{")
 
     target::class.members.filterIsInstance<KProperty<*>>().forEach { it ->
-        builder.append(it.name, ":")
-        builder.append(it.getter.call(target), ",")
+        builder.append(jsonString(it.name), ":")
+        val value = it.getter.call(target)
+        builder.append(if (value is String) jsonString(value) else value, ",")
     }
 
     builder.append("}")
     return "$builder"
 }
+
+private fun jsonString(value: String) = """"${value.replace("\"", "\\\"")}""""
+
+
+class JSON0(val a: Int, val b: String)
+
+fun main() {
+    println(stringify(JSON0(3, "abc")))
+}
+
 
 
