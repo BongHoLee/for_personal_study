@@ -19,7 +19,7 @@ private fun <T : Any> jsonObject(target: T): String {
 
 private fun jsonString(value: String) = """"${value.replace("\"", "\\\"")}""""
 
-private fun jsonList(target: List<*>): String {
+fun jsonList(target: List<*>): String {
     return target.joinTo(StringBuilder(), ",", "[", "]", transform = ::stringify).toString()
 }
 
@@ -73,6 +73,7 @@ class JSON0(val a: Int, val b: String, val c: List<String>)
 
 fun main() {
     println(stringify2(JSON0(3, "abc", listOf("abc", "def"))))
+    println(stringify2("a"))
 }
 
 
