@@ -47,8 +47,6 @@ class JsonStringify2Test: AnnotationSpec(){
         ) shouldBe """ {"age":31,"hobbies":["soccer","baseball"],"isMail":true,"name":"leebongho"} """.trim()
 
     }
-
-
 }
 
 
