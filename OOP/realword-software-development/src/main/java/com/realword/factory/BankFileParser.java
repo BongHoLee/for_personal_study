@@ -13,6 +13,7 @@ import java.util.List;
 
 public class BankFileParser {
     private static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private BankFileParser() {}
     public static List<BankTransaction> parse(String filePath) {
         List<BankTransaction> bankTransactions = new ArrayList<>();
 

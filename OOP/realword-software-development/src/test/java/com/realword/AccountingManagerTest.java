@@ -22,7 +22,9 @@ class AccountingManagerTest {
         transactions.add(new BankTransaction(LocalDate.parse("01-01-2020", pattern), 20, "B"));
         transactions.add(new BankTransaction(LocalDate.parse("01-02-2020", pattern), 30, "C"));
         transactions.add(new BankTransaction(LocalDate.parse("01-02-2020", pattern), 40, "D"));
-        transactions.add(new BankTransaction(LocalDate.parse("01-03-2020", pattern), 50, "E"));
+        transactions.add(new BankTransaction(LocalDate.parse("01-03-2020", pattern), -20, "E"));
+        transactions.add(new BankTransaction(LocalDate.parse("01-04-2020", pattern), -50, "E"));
+
 
         accountingManager = new AccountingManager(transactions);
     }
@@ -33,6 +35,31 @@ class AccountingManagerTest {
         long accountManagerTotalAmount = accountingManager.totalAmount();
 
         assertThat(streamResult).isEqualTo(accountManagerTotalAmount);
+    }
+
+    @Test
+    void totalDepositTest() {
+        assertThat(accountingManager.totalDeposit()).isEqualTo(100L);
+    }
+
+    @Test
+    void totalWithdrawTest() {
+        assertThat(accountingManager.totalWithdraw()).isEqualTo(-70L);
+    }
+
+    @Test
+    void orderedWithdrawListTest() {
+        List<BankTransaction> bankTransactions = accountingManager.orderedWithdrawListSizeOf(10);
+
+        for (int i = 0; i < bankTransactions.size()-1; i++) {
+            assertThat(bankTransactions.get(i).getAmount()).isGreaterThanOrEqualTo(bankTransactions.get(i+1).getAmount());
+        }
+
+    }
+
+    @Test
+    void mostWithdrawCategoryTest() {
+        System.out.println(accountingManager.mostWithdrawCategory());
     }
 
 }

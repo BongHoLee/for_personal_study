@@ -1,6 +1,12 @@
 package com.realword;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 
 public class AccountingManager {
@@ -11,6 +17,39 @@ public class AccountingManager {
     }
 
     public long totalAmount() {
-        return transactions.stream().mapToLong(BankTransaction::getAmount).reduce(Long::sum).orElse(0);
+        return totalDeposit() + totalWithdraw();
+    }
+
+    public long totalDeposit() {
+        return calculateTotalAmountWithFilter((BankTransaction transaction) -> transaction.getAmount() > 0);
+    }
+
+    public long totalWithdraw() {
+        return calculateTotalAmountWithFilter((BankTransaction transaction) -> transaction.getAmount() < 0);
+    }
+
+    private long calculateTotalAmountWithFilter(Predicate<BankTransaction> predicate) {
+        return transactions.stream()
+                .filter(predicate)
+                .mapToLong(BankTransaction::getAmount)
+                .reduce(Long::sum)
+                .orElse(0);
+    }
+
+    public List<BankTransaction> orderedWithdrawListSizeOf(int size) {
+        return transactions.stream()
+                .sorted((o1, o2) -> (int)( o2.getAmount() - o1.getAmount()))
+                .limit(size)
+                .collect(toList());
+    }
+
+    public String mostWithdrawCategory() {
+        return transactions.stream()
+                .collect(groupingBy(BankTransaction::getCategory))
+                .entrySet().stream()
+                .collect(toMap(Entry::getKey,
+                        eachEntry -> eachEntry.getValue().stream().map(BankTransaction::getAmount).reduce(Long::sum)
+                                .orElse(0L)))
+                .entrySet().stream().reduce((e1, e2) -> e1.getValue() > e2.getValue() ? e2 : e1).get().getKey();
     }
 }
