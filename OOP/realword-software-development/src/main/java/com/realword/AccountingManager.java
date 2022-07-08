@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
+import java.time.Month;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
@@ -50,6 +51,14 @@ public class AccountingManager {
                 .collect(toMap(Entry::getKey,
                         eachEntry -> eachEntry.getValue().stream().map(BankTransaction::getAmount).reduce(Long::sum)
                                 .orElse(0L)))
-                .entrySet().stream().reduce((e1, e2) -> e1.getValue() > e2.getValue() ? e2 : e1).get().getKey();
+                .entrySet().stream().reduce((e1, e2) -> e1.getValue() > e2.getValue() ? e2 : e1).orElseThrow().getKey();
+    }
+
+    public long calculateOf(Month month) {
+        return transactions.stream()
+                .filter(eachTransaction -> eachTransaction.isTransactedAt(month))
+                .mapToLong(BankTransaction::getAmount)
+                .reduce(Long::sum)
+                .orElse(0);
     }
 }

@@ -4,6 +4,7 @@ package com.realword;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,15 @@ class AccountingManagerTest {
 
     @Test
     void mostWithdrawCategoryTest() {
-        System.out.println(accountingManager.mostWithdrawCategory());
+        assertThat(accountingManager.mostWithdrawCategory()).isEqualTo("E");
+    }
+
+    @Test
+    void calcuateOfMonthTest() {
+        assertThat(accountingManager.calculateOf(Month.JANUARY)).isEqualTo(30);
+        assertThat(accountingManager.calculateOf(Month.FEBRUARY)).isEqualTo(70);
+        assertThat(accountingManager.calculateOf(Month.MARCH)).isEqualTo(-20);
+        assertThat(accountingManager.calculateOf(Month.APRIL)).isEqualTo(-50);
     }
 
 }
