@@ -1,26 +1,17 @@
 package hellojpa;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
 @Entity
 public class Member {
 
     @Id
     private Long id;
+
+    @Column(name = "username")
     private String name;
-
-    @Transient
-    private String data;
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
 
     public void setId(Long id) {
         this.id = id;
@@ -30,7 +21,11 @@ public class Member {
         this.name = name;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public String getName() {
+        return name;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
