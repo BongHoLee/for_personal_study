@@ -7,7 +7,11 @@
     <persistence-unit name="hello">
 <!--        gradle 빌드 환경의 경우 entity class를 명시해줘야 하는 경우가 있음   -->
 <!--        Spring DATA JPA는 자동으로 entity scan을 제공하기 때문에 필요 X   -->
-        <class>hellojpa.Member</class>
+        <class>jpashop.domain.Item</class>
+        <class>jpashop.domain.Member</class>
+        <class>jpashop.domain.Order</class>
+        <class>jpashop.domain.OrderItem</class>
+
         <properties>
             <!-- 필수 속성 -->
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
