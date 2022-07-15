@@ -1,12 +1,13 @@
-package com.realword.ch3.ex.summarize;
+package com.realword.ch3.ex.summarize.statistics;
 
 import com.realword.ch3.ex.filter.BankTransactionFilter;
 import com.realword.ch3.ex.processor.BankTransaction;
+import com.realword.ch3.ex.summarize.SummaryStatistics;
 
-public class BankTransactionSummarizeWithFilter implements BankTransactionSummarize{
+public class BankTransactionStaisticsSummarizerWithFilter implements BankTransactionStaisticsSummarizer {
     
     private final BankTransactionFilter filter;
-    public BankTransactionSummarizeWithFilter(BankTransactionFilter filter) {
+    public BankTransactionStaisticsSummarizerWithFilter(BankTransactionFilter filter) {
         this.filter = filter;
     }
 

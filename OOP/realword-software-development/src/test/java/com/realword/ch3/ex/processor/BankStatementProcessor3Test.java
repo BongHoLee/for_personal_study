@@ -4,10 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.realword.ch3.ex.filter.BankTransactionFilter;
 import com.realword.ch3.ex.filter.GreaterThanEqualAmountFilter;
-import com.realword.ch3.ex.summarize.BankTransactionSummarize;
-import com.realword.ch3.ex.summarize.BankTransactionSummarizeWithFilter;
-import com.realword.ch3.ex.summarize.BankTransactionsTotalSummarize;
 import com.realword.ch3.ex.summarize.SummaryStatistics;
+import com.realword.ch3.ex.summarize.statistics.BankTransactionStaisticsSummarizer;
+import com.realword.ch3.ex.summarize.statistics.BankTransactionStaisticsSummarizerWithFilter;
+import com.realword.ch3.ex.summarize.statistics.BankTransactionsTotalStaisticsSummarizer;
+import com.realword.ch3.ex.summarize.sum.BankTransactionSummarizer;
+import com.realword.ch3.ex.summarize.sum.FilterSummarizer;
+import com.realword.ch3.ex.summarize.sum.ToTalSummarizer;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class BankStatementProcessorTest {
+class BankStatementProcessor3Test {
 
     List<BankTransaction> transactions = new ArrayList<>();
     BankStatementProcessor3 processor;
@@ -37,56 +40,50 @@ class BankStatementProcessorTest {
         // given
         BankTransactionFilter filter = new GreaterThanEqualAmountFilter(200);
 
+
         // when
         List<BankTransaction> filtered = processor.findTransactionsAbout(filter);
-
 
         // then
         assertThat(filtered.stream().allMatch(each -> each.getAmount() >= 200)).isTrue();
+
+
     }
 
     @Test
-    void JANUARY_거래내역_조회() {
+    void JANUARY_거래내역_통계() {
         // given
         BankTransactionFilter filter = (BankTransaction transaction) -> transaction.getDate().getMonth() == Month.JANUARY;
 
+
         // when
         List<BankTransaction> filtered = processor.findTransactionsAbout(filter);
-
 
         // then
         assertThat(filtered.stream().allMatch(each -> each.getDate().getMonth() == Month.JANUARY)).isTrue();
     }
 
     @Test
-    void 모든_거래내역_통계_조회() {
+    void 모든_거래내역_통계() {
         // given
-        BankTransactionSummarize summarize = new BankTransactionsTotalSummarize();
+        BankTransactionSummarizer summarizer = new ToTalSummarizer();
 
         // when
-        SummaryStatistics summaryStatistics = processor.calculateTransactionsSummarizeAbout(summarize);
+        double total = processor.calculateTransactionsSummarizeAbout(summarizer);
 
-        assertThat(summaryStatistics.getCount()).isEqualTo(6.0);
-        assertThat(summaryStatistics.getSum()).isEqualTo(1200.0);
-        assertThat(summaryStatistics.getMax()).isEqualTo(300.0);
-        assertThat(summaryStatistics.getMin()).isEqualTo(100.0);
-        assertThat(summaryStatistics.getAverage()).isEqualTo(200.0);
+        // then
+        assertThat(total).isEqualTo(1200.0);
     }
 
     @Test
-    void 완구_거래내역_통계_조회() {
+    void 완구_거래내역_통계() {
         // given
         BankTransactionFilter filter = (BankTransaction transaction) -> transaction.getDescription().equals("완구");
-        BankTransactionSummarizeWithFilter summarize = new BankTransactionSummarizeWithFilter(filter);
+        BankTransactionSummarizer summarize = new FilterSummarizer(filter);
 
         // when
-        SummaryStatistics summaryStatistics = processor.calculateTransactionsSummarizeAbout(summarize);
+        double total = processor.calculateTransactionsSummarizeAbout(summarize);
 
-
-        assertThat(summaryStatistics.getCount()).isEqualTo(2.0);
-        assertThat(summaryStatistics.getSum()).isEqualTo(600.0);
-        assertThat(summaryStatistics.getMax()).isEqualTo(300.0);
-        assertThat(summaryStatistics.getMin()).isEqualTo(300.0);
-        assertThat(summaryStatistics.getAverage()).isEqualTo(300.0);
+        assertThat(total).isEqualTo(600.0);
     }
 }

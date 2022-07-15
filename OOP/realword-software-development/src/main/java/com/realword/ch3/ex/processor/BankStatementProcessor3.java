@@ -1,8 +1,7 @@
 package com.realword.ch3.ex.processor;
 
 import com.realword.ch3.ex.filter.BankTransactionFilter;
-import com.realword.ch3.ex.summarize.BankTransactionSummarize;
-import com.realword.ch3.ex.summarize.SummaryStatistics;
+import com.realword.ch3.ex.summarize.sum.BankTransactionSummarizer;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +13,41 @@ public class BankStatementProcessor3 {
         this.bankTransactions = bankTransactions;
     }
 
-    // 추상화된 BankTransactionSummarize에 의존
-    public SummaryStatistics calculateTransactionsSummarizeAbout(BankTransactionSummarize summarizer) {
-        SummaryStatistics summaryStatistics = new SummaryStatistics(0, 0, Double.MIN_VALUE, Double.MAX_VALUE, 0);
+    // 추상화된 BankTransactionSummarizer에 의존
+    public double calculateTransactionsSummarizeAbout(BankTransactionSummarizer summarizer) {
+        double total = 0;
         for (BankTransaction bankTransaction : bankTransactions) {
-            summaryStatistics = summarizer.summarize(summaryStatistics, bankTransaction);
+            total = summarizer.summarize(total, bankTransaction);
         }
-        return summaryStatistics;
+        return total;
+    }
+    public double calculateTotalAmount() {
+        double total = 0;
+        for (BankTransaction bankTransaction : bankTransactions) {
+            total += bankTransaction.getAmount();
+        }
+        return total;
+    }
+
+    public double calculateTotalInMonth(final Month month) {
+        double total = 0;
+        for (BankTransaction bankTransaction : bankTransactions) {
+            if (bankTransaction.getDate().getMonth() == month) {
+
+                total += bankTransaction.getAmount();
+            }
+        }
+        return total;
+    }
+
+    public double calculateTotalForCategory(final String category) {
+        double total = 0;
+        for (BankTransaction bankTransaction : bankTransactions) {
+            if (bankTransaction.getDescription().equals(category)) {
+                total += bankTransaction.getAmount();
+            }
+        }
+        return total;
     }
 
     // 추상화된 BankTransactionFilter에 의존

@@ -1,8 +1,9 @@
-package com.realword.ch3.ex.summarize;
+package com.realword.ch3.ex.summarize.statistics;
 
 import com.realword.ch3.ex.processor.BankTransaction;
+import com.realword.ch3.ex.summarize.SummaryStatistics;
 
-public class BankTransactionsTotalSummarize implements BankTransactionSummarize{
+public class BankTransactionsTotalStaisticsSummarizer implements BankTransactionStaisticsSummarizer {
 
     @Override
     public SummaryStatistics summarize(SummaryStatistics total, BankTransaction transaction) {
