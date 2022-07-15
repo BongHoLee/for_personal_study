@@ -12,6 +12,7 @@ public class BankStatementProcessor2 {
         this.bankTransactions = bankTransactions;
     }
 
+    // 거래 내역의 총 액수
     public double calculateTotalAmount() {
         double total = 0;
         for (BankTransaction bankTransaction : bankTransactions) {
@@ -20,6 +21,7 @@ public class BankStatementProcessor2 {
         return total;
     }
 
+    // 특정 달의 거래 내역 총 액수
     public double calculateTotalInMonth(final Month month) {
         double total = 0;
         for (BankTransaction bankTransaction : bankTransactions) {
@@ -31,6 +33,7 @@ public class BankStatementProcessor2 {
         return total;
     }
 
+    // 특정 항목의 거래 내역 총 액수
     public double calculateTotalForCategory(final String category) {
         double total = 0;
         for (BankTransaction bankTransaction : bankTransactions) {
