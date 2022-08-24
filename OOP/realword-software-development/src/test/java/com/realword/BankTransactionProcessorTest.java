@@ -3,6 +3,8 @@ package com.realword;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.realword.ch3.BankTransaction;
+import com.realword.ch3.BankTransactionProcessor;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;

@@ -1,7 +1,7 @@
-package com.realword.factory;
+package com.realword.ch3.factory;
 
-import com.realword.BankTransactionProcessor;
-import com.realword.BankTransaction;
+import com.realword.ch3.BankTransactionProcessor;
+import com.realword.ch3.BankTransaction;
 import java.util.List;
 
 

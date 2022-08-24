@@ -1,6 +1,6 @@
-package com.realword.factory;
+package com.realword.ch3.factory;
 
-import com.realword.BankTransaction;
+import com.realword.ch3.BankTransaction;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;

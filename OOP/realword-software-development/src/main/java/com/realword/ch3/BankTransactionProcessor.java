@@ -1,4 +1,4 @@
-package com.realword;
+package com.realword.ch3;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;

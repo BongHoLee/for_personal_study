@@ -2,7 +2,8 @@ package com.realword.factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.realword.BankTransaction;
+import com.realword.ch3.BankTransaction;
+import com.realword.ch3.factory.BankFileParser;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
