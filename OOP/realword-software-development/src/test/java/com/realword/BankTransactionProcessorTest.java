@@ -37,6 +37,7 @@ class BankTransactionProcessorTest {
         long streamResult = transactions.stream().mapToLong(BankTransaction::getAmount).reduce(Long::sum).orElse(0);
         long accountManagerTotalAmount = bankTransactionProcessor.totalAmount();
 
+
         assertThat(streamResult).isEqualTo(accountManagerTotalAmount);
     }
 
