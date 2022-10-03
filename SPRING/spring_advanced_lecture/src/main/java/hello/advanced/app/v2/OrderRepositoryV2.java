@@ -1,18 +1,19 @@
 package hello.advanced.app.v2;
 
+import hello.advanced.trace.TraceId;
 import hello.advanced.trace.TraceStatus;
-import hello.advanced.trace.hellotrace.HelloTraceV1;
+import hello.advanced.trace.hellotrace.HelloTraceV2;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class OrderRepositoryV1 {
-    private final HelloTraceV1 trace;
+public class OrderRepositoryV2 {
+    private final HelloTraceV2 trace;
 
-    public void save(String itemId) {
+    public void save(TraceId traceId, String itemId) {
 
-        TraceStatus status = trace.begin("OrderRepositoryV1.save()");
+        TraceStatus status = trace.beginSync(traceId, "OrderRepositoryV1.save()");
         try {
 
             if (itemId.equals("ex")) {
