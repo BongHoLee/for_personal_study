@@ -13,7 +13,7 @@ public class OrderServiceV3 {
 
     public void orderItem(String itemId) {
 
-        TraceStatus status = trace.begin("OrderServiceV1.orderItem()");
+        TraceStatus status = trace.begin("OrderServiceV3.orderItem()");
         try {
             orderRepository.save(itemId);
             trace.end(status);
