@@ -9,7 +9,6 @@
 ## 📚 이론 학습 내용
 
 ### 1. 프록시 패턴 기초
-
 - 프록시 패턴의 개념과 목적
   - 대리인 객체(Proxy 객체)를 통해 **실제 객체에 대한 접근**을 제어한다.
   - 원본 객체의 호출의 결과 값 등을 직접적으로 '변경'하지 않는다.
@@ -35,7 +34,6 @@
   - 캐싱 → 동일 요청 결과를 캐시에서 반환
 
 ### 2. JDK 동적 프록시
-
 - InvocationHandler 인터페이스
 - Proxy.newProxyInstance() 메소드
 - 인터페이스 기반 프록시의 특징과 제한사항
@@ -47,7 +45,6 @@
   - Spring AOP는 대상 Bean이 인터페이스를 구현한 경우에는 JDK 동적 프록시를 우선으로 사용한다.
 
 ### 3. CGLIB 프록시
-
 - 상속 기반 프록시 생성
 - MethodInterceptor 인터페이스
 - 클래스 기반 프록시의 특징과 제한사항
@@ -60,8 +57,93 @@
 
 ## 🛠 실습 과제
 
-### 과제 1: JDK 동적 프록시 구현
+### 과제 0: 정적 프록시 직접 구현하기
 
+**파일 위치**: `src/main/kotlin/bong/training/static_proxy/`
+
+#### 1-1. 기본 서비스 인터페이스 및 구현체
+
+```kotlin
+interface UserService {
+    fun findUser(id: Long): String
+    fun saveUser(name: String): Long
+    fun deleteUser(id: Long): Boolean
+}
+
+class UserServiceImpl : UserService {
+    private val users: ConcurrentHashMap<Long, String> = ConcurrentHashMap()
+    private var id: AtomicLong = AtomicLong(0)
+
+    override fun findUser(id: Long): String {
+        return users[id] ?: throw NoSuchElementException("User with id $id not found")
+    }
+
+    override fun saveUser(name: String): Long {
+        val id = generateId()
+        users[id] = name
+        return id
+    }
+
+    override fun deleteUser(id: Long): Boolean {
+        return users.remove(id) != null
+    }
+
+    private fun generateId(): Long {
+        return id.incrementAndGet()
+    }
+}
+```
+
+#### 1-2. 정적 프록시 구현
+
+```kotlin
+
+// UserService에 대한 로깅 프록시 구현
+class UserLogServiceProxy(
+    private val userService: UserService,
+    private val logInvocator: LogInvocator
+) : UserService {
+
+    override fun findUser(id: Long): String {
+        return logInvocator.executeWithLog {
+            userService.findUser(id)
+        }
+    }
+
+    override fun saveUser(name: String): Long {
+        return logInvocator.executeWithLog {
+            userService.saveUser(name)
+        }
+    }
+
+    override fun deleteUser(id: Long): Boolean {
+        return logInvocator.executeWithLog { userService.deleteUser(id) }
+    }
+}
+
+// Log 횡단 관심사를 별도의 클래스로 분리
+class LogInvocator {
+    private val log = LoggerFactory.getLogger(LogInvocator::class.java)
+    private val callCount = AtomicInteger(0)
+
+    fun <R>  executeWithLog(target: () -> R) : R {
+        callCount.incrementAndGet()
+        println("Log start")
+        val result = target()
+        println("Log end")
+
+        return result
+    }
+
+    fun getCallCount(): Int = callCount.get()
+
+    fun resetCallCount() {
+        callCount.set(0)
+    }
+}
+```
+
+### 과제 1: JDK 동적 프록시 구현
 **파일 위치**: `src/main/kotlin/bong/training/phase1/jdk/`
 
 #### 1-1. 기본 서비스 인터페이스 및 구현체

@@ -1,4 +1,4 @@
-package bong.training.real
+package bong.training.static_proxy
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
