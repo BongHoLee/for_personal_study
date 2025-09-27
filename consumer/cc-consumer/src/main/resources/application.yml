@@ -1,0 +1,40 @@
+# 공통 설정 (모든 프로파일에 공통 적용)
+spring:
+  application:
+    name: cc-consumer
+  profiles:
+    active: dev  # 기본 프로파일
+  
+  # 공통 JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        # 공통 성능 설정
+        jdbc:
+          order_inserts: true
+          order_updates: true
+        connection:
+          provider_disables_autocommit: true
+        cache:
+          use_second_level_cache: false
+          use_query_cache: false
+  
+  # 공통 Kafka 설정
+  kafka:
+    consumer:
+      group-id: cc-consumer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+    listener:
+      ack-mode: manual_immediate
+
+# 공통 로깅 설정
+logging:
+  level:
+    root: INFO
+    org.springframework: WARN

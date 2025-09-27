@@ -1,0 +1,27 @@
+{
+  "type": "record",
+  "name": "PayAccountDeletedEnvelop",
+  "namespace": "com.consumer.cconsumer.message.avro",
+  "fields": [
+    {
+      "name": "uuid",
+      "type": "string",
+      "doc": "Unique identifier for the event"
+    },
+    {
+      "name": "occurred_at",
+      "type": "long",
+      "doc": "Timestamp when the event occurred (epoch milliseconds)"
+    },
+    {
+      "name": "payAccountId",
+      "type": "long",
+      "doc": "Pay account ID that was deleted"
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "doc": "Reason for account deletion"
+    }
+  ]
+}
