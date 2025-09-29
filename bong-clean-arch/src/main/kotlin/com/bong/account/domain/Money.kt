@@ -1,14 +1,18 @@
 package com.bong.account.domain
 
+import java.math.BigDecimal
+
 @JvmInline
 value class Money(
-    val amount: Long
+    val amount: BigDecimal
 ) {
     companion object {
-        val ZERO = Money(0)
+        val ZERO = Money(BigDecimal.ZERO)
 
-        fun of(amount: Long): Money = Money(amount)
-        fun of(amount: Int): Money = Money(amount.toLong())
-
+        fun of(amount: BigDecimal) = Money(amount)
+        fun of(amount: Number) = Money(BigDecimal(amount.toString()))
     }
+
+    operator fun plus(other: Money) = Money.of(this.amount.plus(other.amount))
+    operator fun minus(other: Money) = Money.of(this.amount.minus(other.amount))
 }
