@@ -2,11 +2,14 @@ package com.consumer.cconsumer.config
 
 import com.consumer.cconsumer.message.avro.PayAccountDeletedEnvelop
 import com.consumer.cconsumer.message.model.ConsentMessage
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.confluent.kafka.serializers.KafkaAvroDeserializer
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -16,7 +19,10 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.listener.ContainerProperties
+import org.springframework.kafka.listener.DefaultErrorHandler
+import org.springframework.kafka.listener.RetryListener
 import org.springframework.kafka.support.serializer.JsonDeserializer
+import org.springframework.util.backoff.FixedBackOff
 
 @Configuration
 @EnableKafka
@@ -26,6 +32,8 @@ import org.springframework.kafka.support.serializer.JsonDeserializer
     matchIfMissing = true
 )
 class KafkaConfig {
+
+    private val log = LoggerFactory.getLogger(KafkaConfig::class.java)
 
     @Value("\${spring.kafka.consumer.bootstrap-servers:localhost:9092}")
     private lateinit var bootstrapServers: String
@@ -38,6 +46,45 @@ class KafkaConfig {
 
     @Value("\${spring.kafka.schema-registry.url:http://localhost:8081}")
     private lateinit var schemaRegistryUrl: String
+
+    @Bean
+    fun kafkaErrorHandler(): DefaultErrorHandler {
+        val fixedBackOff = FixedBackOff(1000L, 3L) // 1초 간격, 3회 재시도
+        val errorHandler = DefaultErrorHandler(fixedBackOff)
+        
+        // JSON 파싱 에러 등 재시도해도 의미없는 예외는 재시도하지 않음
+        errorHandler.addNotRetryableExceptions(
+            JsonProcessingException::class.java,
+            IllegalArgumentException::class.java
+        )
+        
+        // 재시도 및 최종 실패 로깅
+        errorHandler.setRetryListeners(object : RetryListener {
+            override fun failedDelivery(
+                record: ConsumerRecord<*, *>,
+                ex: Exception,
+                deliveryAttempt: Int
+            ) {
+                log.warn(
+                    "Retry attempt {} failed for topic: {}, partition: {}, offset: {}, key: {}", 
+                    deliveryAttempt, record.topic(), record.partition(), record.offset(), record.key(), ex
+                )
+            }
+            
+            override fun recovered(
+                record: ConsumerRecord<*, *>, 
+                ex: Exception
+            ) {
+                log.error(
+                    "All retries exhausted for topic: {}, partition: {}, offset: {}, key: {}. Message will be skipped.", 
+                    record.topic(), record.partition(), record.offset(), record.key(), ex
+                )
+                // 필요시 DLQ(Dead Letter Queue) 전송이나 알림 로직 추가 가능
+            }
+        })
+        
+        return errorHandler
+    }
 
     // JSON 메시지용 Consumer Factory
     @Bean
@@ -72,7 +119,8 @@ class KafkaConfig {
     fun jsonKafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, ConsentMessage> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, ConsentMessage>()
         factory.consumerFactory = jsonConsumerFactory()
-        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE 
+        factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+        factory.setCommonErrorHandler(kafkaErrorHandler()) // 에러 핸들러 적용
         
         // 성능 최적화 설정
         factory.setConcurrency(3) // 동시 처리할 컨슈머 스레드 수
@@ -89,7 +137,6 @@ class KafkaConfig {
             ConsumerConfig.GROUP_ID_CONFIG to groupId,
             ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to autoOffsetReset,
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
-            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaAvroDeserializer::class.java,
             ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
             
             // Avro 관련 설정
@@ -113,6 +160,7 @@ class KafkaConfig {
         val factory = ConcurrentKafkaListenerContainerFactory<String, PayAccountDeletedEnvelop>()
         factory.consumerFactory = avroConsumerFactory()
         factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+        factory.setCommonErrorHandler(kafkaErrorHandler()) // 에러 핸들러 적용
         
         // 성능 최적화 설정
         factory.setConcurrency(3) // 동시 처리할 컨슈머 스레드 수
