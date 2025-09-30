@@ -42,9 +42,6 @@
 com.bong.buckpal
 ├── account/                    # 바운디드 컨텍스트
 │   ├── domain/                # 도메인 계층
-│   │   ├── Account.kt        # 도메인 엔티티
-│   │   ├── Activity.kt       # 도메인 엔티티
-│   │   └── Money.kt          # 값 객체
 │   ├── application/           # 애플리케이션 계층
 │   │   ├── provided/         # 인바운드 포트
 │   │   └── required/         # 아웃바운드 포트
