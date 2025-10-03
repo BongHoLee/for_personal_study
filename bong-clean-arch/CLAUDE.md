@@ -1,61 +1,84 @@
-# CLAUDE.md
+# DDD Practice Project
 
-이 파일은 Claude Code (claude.ai/code)가 이 저장소에서 코드 작업을 할 때 참고할 수 있는 가이드를 제공합니다.
+## Project Overview
+점진적 확장형 학습 프로젝트
+- Domain: [주문 관리/도서 대여/예약 시스템]
+- 목표: DDD + Hexagonal → Redis → Kafka 순차 추가
+- 학습 방식: 체크포인트 기반 + 피드백 루프
 
-## 프로젝트 개요
+## Current Status
+- Checkpoint: CP1 (Hexagonal 기본 구조)
+- 상세 계획: @docs/checkpoints/current.md
+- 최근 피드백: @docs/feedback/2025-10-03-cache.md
 
-이 프로젝트의 주된 목적은 '개발자의 헥사고날 아키텍처 실습과 학습'을 돕는 것입니다.
+## Tech Stack
+- Language: Kotlin 1.9+
+- Framework: Spring Boot 3.x
+- Build: Gradle with Kotlin DSL
+- Testing: JUnit 5, Testcontainers
 
-"BuckPal"이라는 송금 서비스를 위한 헥사고날 아키텍처(포트와 어댑터)를 시연하는 Spring Boot 애플리케이션입니다.
-이 프로젝트는 "Get Your Hands Dirty on Clean Architecture" 책을 기반으로 한 동반 구현 예제입니다.
-원본 구현의 링크는 https://github.com/wikibook/clean-architecture 입니다.
+## Architecture Guidelines
+### Package Structure
+```
+com.bong.buckpal
+├── account/                    # 바운디드 컨텍스트
+│   ├── domain/                # 도메인 계층
+│   ├── application/           # 애플리케이션 계층
+│   │   ├── provided/         # 인바운드 포트
+│   │   └── required/         # 아웃바운드 포트
+│   └── adapter/              # 어댑터 계층
+│       ├── web/             # 인바운드 어댑터
+│       └── persistence/     # 아웃바운드 어댑터
+└── comm
+```
 
-## 주요 명령어
+### Domain Layer Rules
+- 외부 프레임워크 의존 금지 (Spring, JPA 등)
+- 불변성 선호 (data class, val)
+- 비즈니스 규칙은 Domain에만
 
-### 빌드 및 테스트
-- **빌드**: `./gradlew build` - 애플리케이션을 컴파일, 테스트하고 패키징합니다
-- **테스트**: `./gradlew test` - ArchUnit 테스트를 포함한 모든 단위 및 통합 테스트를 실행합니다
-- **실행**: `./gradlew bootRun` - Spring Boot 애플리케이션을 시작합니다
+### Testing Strategy
+- 단위 테스트: Domain 로직 
+- 통합 테스트: Adapter (Testcontainers 사용 지양, 최대한 embedded infra 사용)
+- Port 경계에서 계약 테스트
+- Kotest 최대한 활용
 
-### 개발
-- **정리**: `./gradlew clean` - 빌드 아티팩트를 제거합니다
-- **검사**: `./gradlew check` - 모든 검증 작업(테스트, 코드 품질)을 실행합니다
+## Code Style
+- Kotlin 컨벤션 준수
+- 변수명: 의미 있는 이름 (약어 지양)
+- 함수: 한 가지 일만 (SRP)
+- OOP의 다양한 원칙들을 준수
+- kotlin 관용구(idiom)을 최대한 활용
 
-## 아키텍처
+## Commands
+- `./gradlew build`: 빌드
+- `./gradlew test`: 전체 테스트
+- `./gradlew bootRun`: 애플리케이션 실행
 
-- 프로젝트는 명확한 관심사 분리를 통한 헥사고날 아키텍처 원칙을 따릅니다:
-- 주요하게 '도메인' 또는 '바운디드 컨텍스트' 우선의 패키지 구조를 채택합니다.
-- 바운디드 컨텍스트 패키지에는 domain, application, adapter 패키지가 포함됩니다. 
-- provided port interface는 application/provided에, required port interface는 application/required에 위치합니다.
-- 전반적으로 in/out과 같은 방향성 용어 대신 'provided/required'를 사용하여 포트의 역할을 명확히 합니다.
+## Claude's Role
+너는 시니어 개발자이자 DDD 멘토야.
+- 방향 제시, 옵션 제공 (강요 X)
+- 트레이드오프 설명
+- 암묵지 명시적으로
+- 피드백은 2-3개씩 우선순위별로
+- "이게 정답"보다 "왜 이게 나은지" 설명
+- 설계 고민이나 구현 방향에 대한 조언
+- 관련 개념 설명, 예시 코드 패턴 소개
+- 더 깊은 사고를 위한 질문 제시
 
-### 아키텍처 규칙
+## 금지사항 ❌
+- **직접 코드 작성**: 학습자가 구현해야 할 코드를 대신 작성하지 않음
+- **정답 제시**: 완성된 솔루션보다는 사고 과정을 도와줌
+- **단순 답변**: "이렇게 하세요" 보다는 "왜 이렇게 해야 하는지" 설명
 
-프로젝트는 `DependencyRuleTests.java`에서 ArchUnit 테스트를 사용하여 아키텍처 경계를 강제합니다. 주요 규칙:
-- 도메인 계층은 다른 계층에 대한 의존성이 없음
-- 애플리케이션 계층은 도메인에만 의존
-- 어댑터는 포트를 통해 애플리케이션과 도메인에 의존
+## Learning Process
+1. PLAN: 체크포인트 논의
+2. IMPLEMENT: 개발자가 구현 (Claude 대화 없음)
+3. REVIEW: `/review` 커맨드로 피드백 요청
+4. REFLECT: 토론 및 학습 정리
+5. NEXT: `/next-checkpoint` 로 다음 단계 계획
 
-## 기술 스택
-
-- **Java 21** (필수)
-- **Kotlin 1.9** - 주 프로그래밍 언어
-- **Spring Boot 3.x** - 웹 프레임워크 및 의존성 주입
-- **Spring Data JPA** - 영속성 계층
-- **H2 Database** - 개발/테스트용 인메모리 데이터베이스
-- **kotest** - 테스트 프레임워크
-- **MockK** - 모킹 프레임워크
-- **ArchUnit** - 아키텍처 테스트
-
-## 개발 참고사항
-
-- 애플리케이션은 기본적으로 H2 데이터베이스(인메모리)를 사용합니다
-- 설정은 `application.yml`에 있으며 송금 임계값 설정이 포함되어 있습니다
-- 프로젝트에는 포괄적인 단위 테스트와 아키텍처 테스트가 포함되어 있습니다
-
-## 테스트 전략
-
-- **단위 테스트**: 개별 컴포넌트를 격리하여 테스트
-- **통합 테스트**: 완전한 유스케이스 플로우 테스트 
-- **아키텍처 테스트**: ArchUnit을 사용하여 헥사고날 아키텍처 제약사항 검증
-- **테스트 데이터 빌더**: 테스트 설정을 위해 `common/` 패키지에 위치
+## Important Files
+- 현재 체크포인트: @docs/checkpoints/current.md
+- 학습 로그: @docs/learning/log.md
+- ADR: @docs/adr/
