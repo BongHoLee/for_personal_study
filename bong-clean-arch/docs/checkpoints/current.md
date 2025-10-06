@@ -131,6 +131,45 @@ class Account {
 ---
 
 ## 참고 링크
-- 도메인 명세: @DOMAIN_MODEL.md
-- 프로젝트 가이드: @CLAUDE.md
-- 학습 사이클: @docs/cycle.md
+- **도메인 명세**: @DOMAIN_MODEL.md
+- **프로젝트 가이드**: @CLAUDE.md
+- **학습 사이클**: @docs/cycle.md
+- **설계 논쟁 히스토리**: @docs/checkpoints/cp1_history.md ⭐
+
+---
+
+## 📍 다음 세션 시작 가이드
+
+### 세션 재개 시 프롬프트 예시:
+```
+@CLAUDE.md
+@docs/checkpoints/current.md
+@docs/checkpoints/cp1_history.md
+
+CP1 Account 도메인 모델링 중.
+PLAN 단계 완료 → IMPLEMENT 단계 시작.
+
+설계 결정:
+- Option C (하이브리드): Account.transferTo() + TransferService
+- 상세 논의는 cp1_history.md 참조
+
+질문: [구현 관련 질문]
+```
+
+### 다음 단계 (IMPLEMENT)
+**구현 순서 권장**:
+1. Money VO (가장 기본)
+2. AccountId, AccountStatus VO
+3. Account Entity (transferTo, debit, credit)
+4. Activity Entity
+5. TransferService
+6. 테스트 (도메인 규칙 R1-R14)
+
+**주의사항**:
+- Domain Layer에 Spring/JPA 의존성 넣지 않기
+- Kotlin data class + val로 불변성 유지
+- 테스트는 Kotest 우선
+
+**막히면**:
+- 구현 중 설계 고민 생기면 언제든 PLAN으로 돌아가기
+- "/review 부분 구현 완료" 로 중간 피드백 받기 가능

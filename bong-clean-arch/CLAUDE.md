@@ -96,13 +96,12 @@ com.bong
 ```
 
 ### Dependency Rules
-- **Domain Layer**: No external dependencies (Spring, JPA 금지)
+- **Domain Layer**: No external dependencies
 - **Application Layer**: Depends only on Domain
 - **Adapter Layer**: Depends on Application + Domain
 - Direction: Adapters → Application → Domain (단방향)
 
 ### Domain Layer Guidelines
-- 불변성 우선 (`data class`, `val`)
 - 비즈니스 규칙은 Domain에만 위치
 - Rich domain models (anemic domain 지양)
 
