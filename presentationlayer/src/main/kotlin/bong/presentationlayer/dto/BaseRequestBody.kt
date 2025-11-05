@@ -1,11 +1,9 @@
 package bong.presentationlayer.dto
 
 /**
- * 모든 Request의 기본 인터페이스
- * 공통 프로퍼티: requestId, requestDateTime
+ * 모든 Request Body의 기본 인터페이스
+ *
+ * ApiMetadata를 상속하여 API 호출의 공통 메타데이터를 포함합니다.
+ * V1RequestBody, V2RequestBody 등 모든 요청 타입의 상위 인터페이스입니다.
  */
-interface BaseRequestBody {
-    val requestId: String         // 요청 ID
-    val requestDateTime: String   // 요청 시간
-    val userIdentifier: UserIdentifier
-}
+interface BaseRequestBody : ApiMetadata
