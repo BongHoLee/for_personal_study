@@ -1,5 +1,7 @@
-package bong.presentationlayer.dto
+package bong.presentationlayer.dto.response
 
+import bong.presentationlayer.dto.common.UserIdentifier
+import bong.presentationlayer.dto.request.V1RequestBody
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -84,7 +86,7 @@ class V1ResponseBodyTest : FunSpec({
         baseResponse.statusCode shouldBe 200
     }
 
-    test("V1ResponseBody는 ApiMetadata 인터페이스를 구현한다") {
+    test("V1ResponseBody는 Request 필드를 모두 포함한다") {
         // given
         val response = V1ResponseBody(
             requestId = "test-tx-999",
@@ -95,13 +97,14 @@ class V1ResponseBodyTest : FunSpec({
             data = "test"
         )
 
-        // when
-        val metadata: ApiMetadata = response
+        // then - Request 필드들
+        response.requestId shouldBe "test-tx-999"
+        response.requestDateTime shouldBe "2025-11-04T13:00:00"
+        response.userIdentifier.value shouldBe "ci-value-xyz"
 
-        // then
-        metadata.requestId shouldBe "test-tx-999"
-        metadata.requestDateTime shouldBe "2025-11-04T13:00:00"
-        metadata.userIdentifier.value shouldBe "ci-value-xyz"
+        // Response 추가 필드들
+        response.responseDateTime shouldBe "2025-11-04T13:00:01"
+        response.statusCode shouldBe 200
     }
 
     test("V1ResponseBody는 V1RequestBody로부터 생성할 수 있다") {

@@ -1,6 +1,5 @@
 package com.codex.consumer.config
 
-import com.codex.consumer.consumer.MydataConsentConsumer
 import com.codex.consumer.model.ConsentMessage
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.ByteArrayDeserializer

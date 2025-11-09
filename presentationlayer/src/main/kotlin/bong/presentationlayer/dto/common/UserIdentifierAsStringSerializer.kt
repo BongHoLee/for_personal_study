@@ -1,4 +1,4 @@
-package bong.presentationlayer.dto
+package bong.presentationlayer.dto.common
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

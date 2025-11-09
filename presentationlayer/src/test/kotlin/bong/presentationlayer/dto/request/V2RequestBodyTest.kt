@@ -1,5 +1,6 @@
-package bong.presentationlayer.dto
+package bong.presentationlayer.dto.request
 
+import bong.presentationlayer.dto.common.UserIdentifier
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain

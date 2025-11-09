@@ -1,4 +1,4 @@
-package bong.presentationlayer.dto
+package bong.presentationlayer.dto.common
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,4 +1,4 @@
-package bong.presentationlayer.dto
+package bong.presentationlayer.dto.common
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe

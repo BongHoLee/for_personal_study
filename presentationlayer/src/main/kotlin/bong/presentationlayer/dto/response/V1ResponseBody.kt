@@ -1,20 +1,20 @@
-package bong.presentationlayer.dto
+package bong.presentationlayer.dto.response
 
+import bong.presentationlayer.dto.common.UserIdentifier
+import bong.presentationlayer.dto.common.UserIdentifierAsStringSerializer
+import bong.presentationlayer.dto.request.V1RequestBody
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * V2 API Response Body
+ * V1 API Response Body
  *
  * ## JSON 형식 (flatten)
  * ```json
  * {
  *   "api_transaction_id": "tx-123",
  *   "request_time": "2025-11-04T10:00:00",
- *   "user_identifier": {
- *     "type": "CI",
- *     "value": "ci-value-12345"
- *   },
+ *   "ci": "ci-value-12345",
  *   "response_time": "2025-11-04T10:00:01",
  *   "status_code": 200,
  *   "data": "success"
@@ -23,19 +23,20 @@ import kotlinx.serialization.Serializable
  *
  * ## 설계 포인트
  * - Request의 모든 필드를 포함 (요청-응답 추적)
- * - JSON은 flatten되어 중첩 없음 (user_identifier는 하나의 필드)
- * - user_identifier는 CI, DI, Email 모두 지원
+ * - JSON은 flatten되어 중첩 없음
+ * - ci 필드는 UserIdentifierAsStringSerializer로 문자열로 직렬화
  */
 @Serializable
-data class V2ResponseBody(
+data class V1ResponseBody(
     @SerialName("api_transaction_id")
     override val requestId: String,
 
     @SerialName("request_time")
     override val requestDateTime: String,
 
-    @SerialName("user_identifier")
-    override val userIdentifier: UserIdentifier,
+    @SerialName("ci")
+    @Serializable(with = UserIdentifierAsStringSerializer::class)
+    override val userIdentifier: UserIdentifier.CI,
 
     @SerialName("response_time")
     override val responseDateTime: String,
@@ -47,15 +48,15 @@ data class V2ResponseBody(
 ) : BaseResponseBody {
     companion object {
         /**
-         * V2RequestBody로부터 Response 생성
+         * V1RequestBody로부터 Response 생성
          */
         fun from(
-            request: V2RequestBody,
+            request: V1RequestBody,
             responseDateTime: String,
             statusCode: Int,
             data: String?
-        ): V2ResponseBody {
-            return V2ResponseBody(
+        ): V1ResponseBody {
+            return V1ResponseBody(
                 requestId = request.requestId,
                 requestDateTime = request.requestDateTime,
                 userIdentifier = request.userIdentifier,

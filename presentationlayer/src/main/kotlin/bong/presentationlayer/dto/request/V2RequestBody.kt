@@ -1,5 +1,6 @@
-package bong.presentationlayer.dto
+package bong.presentationlayer.dto.request
 
+import bong.presentationlayer.dto.common.UserIdentifier
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
