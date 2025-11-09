@@ -1,5 +1,6 @@
 package bong.presentationlayer.service
 
+import bong.presentationlayer.context.RequestContext
 import bong.presentationlayer.domain.UserId
 import bong.presentationlayer.dto.common.UserIdentifier
 import bong.presentationlayer.exception.UserNotFoundException
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Service
  * - 그 외는 UserNotFoundException 발생
  */
 @Service
-class MockUserIdResolver : UserIdResolver {
+class MockUserIdResolver(
+    private val requestContext: RequestContext
+) : UserIdResolver {
 
     private val userMap = mapOf(
         "ci-12345" to UserId("user-001"),
@@ -26,8 +29,16 @@ class MockUserIdResolver : UserIdResolver {
         "test@example.com" to UserId("user-003")
     )
 
-    override fun resolve(userIdentifier: UserIdentifier, transactionId: String): UserId {
-        return userMap[userIdentifier.value]
+    override fun resolve(
+        userIdentifier: UserIdentifier,
+        transactionId: String
+    ): UserId {
+        val userId = userMap[userIdentifier.value]
             ?: throw UserNotFoundException(userIdentifier, transactionId)
+
+        // 성공 시 RequestContext에 UserId 저장 (TransactionHistory 로깅용)
+        requestContext.userId = userId
+
+        return userId
     }
 }

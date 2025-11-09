@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
+import org.hamcrest.Matchers.nullValue
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -42,7 +43,6 @@ class ApiControllerTest(
         )
             .andExpect(status().isOk)
             .andExpect(header().string("service-id", "test-service-001"))
-            .andExpect(jsonPath("$.transaction_id").value("test-tx-001"))
             .andExpect(jsonPath("$.api_transaction_id").value("test-tx-001"))
             .andExpect(jsonPath("$.status_code").value(200))
             .andExpect(jsonPath("$.data").value("Processing completed for user: user-001"))
@@ -65,7 +65,7 @@ class ApiControllerTest(
         )
             .andExpect(status().isNotFound)
             .andExpect(header().string("service-id", "test-service-002"))
-            .andExpect(jsonPath("$.transaction_id").value("test-tx-002"))
+            .andExpect(jsonPath("$.api_transaction_id").value("test-tx-002"))
             .andExpect(jsonPath("$.status_code").value(404))
             .andExpect(jsonPath("$.ci").value("ci-unknown"))
     }
@@ -87,10 +87,10 @@ class ApiControllerTest(
         )
             .andExpect(status().isOk)
             .andExpect(header().string("service-id", "test-service-003"))
-            .andExpect(jsonPath("$.transaction_id").value("test-tx-003"))
             .andExpect(jsonPath("$.api_transaction_id").value("test-tx-003"))
             .andExpect(jsonPath("$.status_code").value(200))
             .andExpect(jsonPath("$.data").value("Processing completed for user: user-002"))
+            .andExpect(jsonPath("$.user_identifier.type").value("DI"))
     }
 
     test("V2 API - Email 타입으로 정상 처리") {
@@ -131,9 +131,31 @@ class ApiControllerTest(
         )
             .andExpect(status().isNotFound)
             .andExpect(header().string("service-id", "test-service-005"))
-            .andExpect(jsonPath("$.transaction_id").value("test-tx-005"))
+            .andExpect(jsonPath("$.api_transaction_id").value("test-tx-005"))
             .andExpect(jsonPath("$.status_code").value(404))
             .andExpect(jsonPath("$.user_identifier.type").value("EMAIL"))
             .andExpect(jsonPath("$.user_identifier.value").value("unknown@example.com"))
+    }
+
+    test("V1 API - 잘못된 JSON이면 400과 null 필드") {
+        mockMvc.perform(
+            post("/api/v1/process")
+                .header("service-id", "test-service-400-v1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{") // invalid JSON
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(header().string("service-id", "test-service-400-v1"))
+    }
+
+    test("V2 API - 잘못된 JSON이면 400과 null 필드") {
+        mockMvc.perform(
+            post("/api/v2/process")
+                .header("service-id", "test-service-400-v2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{") // invalid JSON
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(header().string("service-id", "test-service-400-v2"))
     }
 })

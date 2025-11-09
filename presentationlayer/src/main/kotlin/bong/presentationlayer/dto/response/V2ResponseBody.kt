@@ -11,7 +11,6 @@ import kotlinx.serialization.Serializable
  * ## 정상 응답 JSON 형식 (flatten)
  * ```json
  * {
- *   "transaction_id": "tx-123",
  *   "api_transaction_id": "tx-123",
  *   "request_time": "2025-11-04T10:00:00",
  *   "user_identifier": {
@@ -27,7 +26,6 @@ import kotlinx.serialization.Serializable
  * ## 에러 응답 JSON 형식
  * ```json
  * {
- *   "transaction_id": "tx-123",
  *   "status_code": 404,
  *   "user_identifier": {
  *     "type": "CI",
@@ -48,14 +46,11 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class V2ResponseBody(
-    @SerialName("transaction_id")
-    override val transactionId: String,
-
     @SerialName("status_code")
     override val statusCode: Int,
 
     @SerialName("user_identifier")
-    override val userIdentifier: UserIdentifier,
+    override val userIdentifier: UserIdentifier?,
 
     @SerialName("api_transaction_id")
     override val requestId: String? = null,
@@ -79,7 +74,6 @@ data class V2ResponseBody(
             data: String?
         ): V2ResponseBody {
             return V2ResponseBody(
-                transactionId = request.requestId,
                 statusCode = statusCode,
                 userIdentifier = request.userIdentifier,
                 requestId = request.requestId,
@@ -94,15 +88,14 @@ data class V2ResponseBody(
          * transactionId, statusCode, userIdentifier만 필수, 나머지는 null
          */
         fun error(
-            transactionId: String,
+            requestId: String?,
             statusCode: Int,
             userIdentifier: UserIdentifier
         ): V2ResponseBody {
             return V2ResponseBody(
-                transactionId = transactionId,
                 statusCode = statusCode,
                 userIdentifier = userIdentifier,
-                requestId = null,
+                requestId = requestId,
                 requestDateTime = null,
                 responseDateTime = null,
                 data = null

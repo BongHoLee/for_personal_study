@@ -12,7 +12,6 @@ import kotlinx.serialization.Serializable
  * ## 정상 응답 JSON 형식 (flatten)
  * ```json
  * {
- *   "transaction_id": "tx-123",
  *   "api_transaction_id": "tx-123",
  *   "request_time": "2025-11-04T10:00:00",
  *   "ci": "ci-value-12345",
@@ -25,10 +24,9 @@ import kotlinx.serialization.Serializable
  * ## 에러 응답 JSON 형식
  * ```json
  * {
- *   "transaction_id": "tx-123",
+ *   "api_transaction_id": "tx-123",
  *   "status_code": 404,
  *   "ci": "ci-value-12345",
- *   "api_transaction_id": null,
  *   "request_time": null,
  *   "response_time": null,
  *   "data": null
@@ -43,15 +41,12 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class V1ResponseBody(
-    @SerialName("transaction_id")
-    override val transactionId: String,
-
     @SerialName("status_code")
     override val statusCode: Int,
 
     @SerialName("ci")
     @Serializable(with = UserIdentifierAsStringSerializer::class)
-    override val userIdentifier: UserIdentifier.CI,
+    override val userIdentifier: UserIdentifier.CI?,
 
     @SerialName("api_transaction_id")
     override val requestId: String? = null,
@@ -75,7 +70,6 @@ data class V1ResponseBody(
             data: String?
         ): V1ResponseBody {
             return V1ResponseBody(
-                transactionId = request.requestId,
                 statusCode = statusCode,
                 userIdentifier = request.userIdentifier,
                 requestId = request.requestId,
@@ -90,15 +84,14 @@ data class V1ResponseBody(
          * transactionId, statusCode, userIdentifier만 필수, 나머지는 null
          */
         fun error(
-            transactionId: String,
+            requestId: String?,
             statusCode: Int,
             userIdentifier: UserIdentifier.CI
         ): V1ResponseBody {
             return V1ResponseBody(
-                transactionId = transactionId,
                 statusCode = statusCode,
                 userIdentifier = userIdentifier,
-                requestId = null,
+                requestId = requestId,
                 requestDateTime = null,
                 responseDateTime = null,
                 data = null

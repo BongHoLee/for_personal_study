@@ -36,7 +36,8 @@ class TransactionHistoryLogger {
     fun log(
         serviceId: String,
         requestBody: BaseRequestBody,
-        responseBody: BaseResponseBody
+        responseBody: BaseResponseBody,
+        userId: String?
     ) {
         try {
             val history = TransactionHistory(
@@ -46,7 +47,8 @@ class TransactionHistoryLogger {
                 requestDateTime = requestBody.requestDateTime,
                 responseDateTime = responseBody.responseDateTime ?: "N/A",
                 statusCode = responseBody.statusCode,
-                userIdentifier = requestBody.userIdentifier.value
+                userIdentifier = requestBody.userIdentifier.value,
+                userId = userId
             )
 
             logger.info(
@@ -60,6 +62,7 @@ class TransactionHistoryLogger {
                 |Response Time: ${history.responseDateTime}
                 |Status Code: ${history.statusCode}
                 |User Identifier: ${history.userIdentifier}
+                |User ID: ${history.userId ?: "N/A (not a member)"}
                 |========================================
                 |
                 """.trimMargin()
@@ -80,5 +83,6 @@ data class TransactionHistory(
     val requestDateTime: String,
     val responseDateTime: String,
     val statusCode: Int,
-    val userIdentifier: String
+    val userIdentifier: String,
+    val userId: String?  // 회원 조회 성공 시 UserId, 미가입자는 null
 )
