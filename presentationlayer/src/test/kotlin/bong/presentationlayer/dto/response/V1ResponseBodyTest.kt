@@ -15,6 +15,7 @@ class V1ResponseBodyTest : FunSpec({
     test("V1ResponseBody는 JSON으로 정상적으로 직렬화된다") {
         // given
         val response = V1ResponseBody(
+            transactionId = "test-tx-123",
             requestId = "test-tx-123",
             requestDateTime = "2025-11-04T10:00:00",
             userIdentifier = UserIdentifier.CI(value = "test-ci-value-12345"),
@@ -27,6 +28,7 @@ class V1ResponseBodyTest : FunSpec({
         val jsonString = json.encodeToString(response)
 
         // then
+        jsonString shouldContain "transaction_id"
         jsonString shouldContain "api_transaction_id"
         jsonString shouldContain "test-tx-123"
         jsonString shouldContain "request_time"
@@ -44,6 +46,7 @@ class V1ResponseBodyTest : FunSpec({
         // given
         val jsonString = """
             {
+                "transaction_id": "test-tx-456",
                 "api_transaction_id": "test-tx-456",
                 "request_time": "2025-11-04T11:00:00",
                 "ci": "ci-value-67890",
@@ -57,6 +60,7 @@ class V1ResponseBodyTest : FunSpec({
         val response = json.decodeFromString<V1ResponseBody>(jsonString)
 
         // then
+        response.transactionId shouldBe "test-tx-456"
         response.requestId shouldBe "test-tx-456"
         response.requestDateTime shouldBe "2025-11-04T11:00:00"
         response.userIdentifier.value shouldBe "ci-value-67890"
@@ -68,6 +72,7 @@ class V1ResponseBodyTest : FunSpec({
     test("V1ResponseBody는 BaseResponseBody 인터페이스를 구현한다") {
         // given
         val response = V1ResponseBody(
+            transactionId = "test-tx-789",
             requestId = "test-tx-789",
             requestDateTime = "2025-11-04T12:00:00",
             userIdentifier = UserIdentifier.CI(value = "ci-value-abc"),
@@ -80,6 +85,7 @@ class V1ResponseBodyTest : FunSpec({
         val baseResponse: BaseResponseBody = response
 
         // then
+        baseResponse.transactionId shouldBe "test-tx-789"
         baseResponse.requestId shouldBe "test-tx-789"
         baseResponse.requestDateTime shouldBe "2025-11-04T12:00:00"
         baseResponse.responseDateTime shouldBe "2025-11-04T12:00:01"
@@ -89,6 +95,7 @@ class V1ResponseBodyTest : FunSpec({
     test("V1ResponseBody는 Request 필드를 모두 포함한다") {
         // given
         val response = V1ResponseBody(
+            transactionId = "test-tx-999",
             requestId = "test-tx-999",
             requestDateTime = "2025-11-04T13:00:00",
             userIdentifier = UserIdentifier.CI(value = "ci-value-xyz"),
@@ -98,6 +105,7 @@ class V1ResponseBodyTest : FunSpec({
         )
 
         // then - Request 필드들
+        response.transactionId shouldBe "test-tx-999"
         response.requestId shouldBe "test-tx-999"
         response.requestDateTime shouldBe "2025-11-04T13:00:00"
         response.userIdentifier.value shouldBe "ci-value-xyz"
@@ -124,6 +132,7 @@ class V1ResponseBodyTest : FunSpec({
         )
 
         // then
+        response.transactionId shouldBe request.requestId
         response.requestId shouldBe request.requestId
         response.requestDateTime shouldBe request.requestDateTime
         response.userIdentifier shouldBe request.userIdentifier
@@ -135,6 +144,7 @@ class V1ResponseBodyTest : FunSpec({
     test("V1ResponseBody는 에러 응답도 표현할 수 있다") {
         // given
         val errorResponse = V1ResponseBody(
+            transactionId = "test-tx-error",
             requestId = "test-tx-error",
             requestDateTime = "2025-11-04T15:00:00",
             userIdentifier = UserIdentifier.CI(value = "ci-error"),

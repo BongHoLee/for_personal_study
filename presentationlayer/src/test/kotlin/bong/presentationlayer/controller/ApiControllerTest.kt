@@ -13,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,10 +41,11 @@ class ApiControllerTest(
                 .content(json.encodeToString(requestBody))
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.body.requestId").value("test-tx-001"))
-            .andExpect(jsonPath("$.body.statusCode").value(200))
-            .andExpect(jsonPath("$.body.data").value("Processing completed for user: user-001"))
-            .andExpect(jsonPath("$.serviceId").value("test-service-001"))
+            .andExpect(header().string("service-id", "test-service-001"))
+            .andExpect(jsonPath("$.transaction_id").value("test-tx-001"))
+            .andExpect(jsonPath("$.api_transaction_id").value("test-tx-001"))
+            .andExpect(jsonPath("$.status_code").value(200))
+            .andExpect(jsonPath("$.data").value("Processing completed for user: user-001"))
     }
 
     test("V1 API - 회원이 아닌 경우 404 에러") {
@@ -61,9 +64,10 @@ class ApiControllerTest(
                 .content(json.encodeToString(requestBody))
         )
             .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.statusCode").value(404))
-            .andExpect(jsonPath("$.message").value("회원 아님"))
-            .andExpect(jsonPath("$.userIdentifier").value("ci-unknown"))
+            .andExpect(header().string("service-id", "test-service-002"))
+            .andExpect(jsonPath("$.transaction_id").value("test-tx-002"))
+            .andExpect(jsonPath("$.status_code").value(404))
+            .andExpect(jsonPath("$.ci").value("ci-unknown"))
     }
 
     test("V2 API - DI 타입으로 정상 처리") {
@@ -82,10 +86,11 @@ class ApiControllerTest(
                 .content(json.encodeToString(requestBody))
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.body.requestId").value("test-tx-003"))
-            .andExpect(jsonPath("$.body.statusCode").value(200))
-            .andExpect(jsonPath("$.body.data").value("Processing completed for user: user-002"))
-            .andExpect(jsonPath("$.serviceId").value("test-service-003"))
+            .andExpect(header().string("service-id", "test-service-003"))
+            .andExpect(jsonPath("$.transaction_id").value("test-tx-003"))
+            .andExpect(jsonPath("$.api_transaction_id").value("test-tx-003"))
+            .andExpect(jsonPath("$.status_code").value(200))
+            .andExpect(jsonPath("$.data").value("Processing completed for user: user-002"))
     }
 
     test("V2 API - Email 타입으로 정상 처리") {
@@ -104,8 +109,9 @@ class ApiControllerTest(
                 .content(json.encodeToString(requestBody))
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.body.statusCode").value(200))
-            .andExpect(jsonPath("$.body.data").value("Processing completed for user: user-003"))
+            .andExpect(header().string("service-id", "test-service-004"))
+            .andExpect(jsonPath("$.status_code").value(200))
+            .andExpect(jsonPath("$.data").value("Processing completed for user: user-003"))
     }
 
     test("V2 API - 회원이 아닌 경우 404 에러") {
@@ -124,6 +130,10 @@ class ApiControllerTest(
                 .content(json.encodeToString(requestBody))
         )
             .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.message").value("회원 아님"))
+            .andExpect(header().string("service-id", "test-service-005"))
+            .andExpect(jsonPath("$.transaction_id").value("test-tx-005"))
+            .andExpect(jsonPath("$.status_code").value(404))
+            .andExpect(jsonPath("$.user_identifier.type").value("EMAIL"))
+            .andExpect(jsonPath("$.user_identifier.value").value("unknown@example.com"))
     }
 })

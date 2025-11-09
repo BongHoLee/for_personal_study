@@ -1,15 +1,18 @@
 package bong.presentationlayer.controller
 
+import bong.presentationlayer.context.RequestContext
 import bong.presentationlayer.domain.UserId
-import bong.presentationlayer.dto.request.ServiceRequest
 import bong.presentationlayer.dto.request.V1RequestBody
 import bong.presentationlayer.dto.request.V2RequestBody
-import bong.presentationlayer.dto.response.ServiceResponse
 import bong.presentationlayer.dto.response.V1ResponseBody
 import bong.presentationlayer.dto.response.V2ResponseBody
 import bong.presentationlayer.logging.TransactionHistoryLogger
 import bong.presentationlayer.service.UserIdResolver
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 
@@ -18,32 +21,34 @@ import java.time.Instant
  *
  * ## 특징
  * - HttpServletRequest에 직접 의존하지 않음
- * - ServiceRequest를 통해 service-id와 body를 받음
  * - UserIdResolver를 사용하여 UserIdentifier → UserId 변환
- * - ServiceResponse를 반환하여 service-id를 Response에 전파
+ * - ResponseBody를 직접 반환 (wrapper 없음)
+ * - service-id는 RequestContext와 ResponseBodyAdvice를 통해 자동 처리
  * - TransactionHistoryLogger로 비동기 로깅
  */
 @RestController
 @RequestMapping("/api")
 class ApiController(
     private val userIdResolver: UserIdResolver,
-    private val transactionHistoryLogger: TransactionHistoryLogger
+    private val transactionHistoryLogger: TransactionHistoryLogger,
+    private val requestContext: RequestContext
 ) {
 
     private val logger = LoggerFactory.getLogger(ApiController::class.java)
+    private val json = Json { prettyPrint = false; encodeDefaults = true }
 
     /**
      * V1 API Endpoint
      */
-    @PostMapping("/v1/process")
+    @PostMapping("/v1/process", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun processV1(
-        @RequestHeader("service-id") serviceId: String,
         @RequestBody requestBody: V1RequestBody
-    ): ServiceResponse<V1ResponseBody> {
+    ): ResponseEntity<String> {
+        val serviceId = requestContext.serviceId ?: "unknown"
         logger.info("Processing V1 request - serviceId: $serviceId, requestId: ${requestBody.requestId}")
 
         // 1. UserIdentifier → UserId 변환 (회원 검증)
-        val userId: UserId = userIdResolver.resolve(requestBody.userIdentifier)
+        val userId: UserId = userIdResolver.resolve(requestBody.userIdentifier, requestBody.requestId)
         logger.info("Resolved userId: $userId for userIdentifier: ${requestBody.userIdentifier.value}")
 
         // 2. 비즈니스 로직 처리 (여기서는 간단히 성공 응답)
@@ -54,28 +59,28 @@ class ApiController(
             data = "Processing completed for user: $userId"
         )
 
-        // 3. ServiceResponse 생성
-        val serviceRequest = ServiceRequest(serviceId, requestBody)
-        val serviceResponse = ServiceResponse.from(serviceRequest, responseBody)
-
-        // 4. Transaction History 비동기 로깅
+        // 3. Transaction History 비동기 로깅
         transactionHistoryLogger.log(serviceId, requestBody, responseBody)
 
-        return serviceResponse
+        // 4. JSON 직렬화 후 반환 (ResponseBody 직접 반환)
+        val jsonString = json.encodeToString(responseBody)
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(jsonString)
     }
 
     /**
      * V2 API Endpoint
      */
-    @PostMapping("/v2/process")
+    @PostMapping("/v2/process", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun processV2(
-        @RequestHeader("service-id") serviceId: String,
         @RequestBody requestBody: V2RequestBody
-    ): ServiceResponse<V2ResponseBody> {
+    ): ResponseEntity<String> {
+        val serviceId = requestContext.serviceId ?: "unknown"
         logger.info("Processing V2 request - serviceId: $serviceId, requestId: ${requestBody.requestId}")
 
         // 1. UserIdentifier → UserId 변환 (회원 검증)
-        val userId: UserId = userIdResolver.resolve(requestBody.userIdentifier)
+        val userId: UserId = userIdResolver.resolve(requestBody.userIdentifier, requestBody.requestId)
         logger.info("Resolved userId: $userId for userIdentifier: ${requestBody.userIdentifier.value}")
 
         // 2. 비즈니스 로직 처리
@@ -86,13 +91,13 @@ class ApiController(
             data = "Processing completed for user: $userId"
         )
 
-        // 3. ServiceResponse 생성
-        val serviceRequest = ServiceRequest(serviceId, requestBody)
-        val serviceResponse = ServiceResponse.from(serviceRequest, responseBody)
-
-        // 4. Transaction History 비동기 로깅
+        // 3. Transaction History 비동기 로깅
         transactionHistoryLogger.log(serviceId, requestBody, responseBody)
 
-        return serviceResponse
+        // 4. JSON 직렬화 후 반환 (ResponseBody 직접 반환)
+        val jsonString = json.encodeToString(responseBody)
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(jsonString)
     }
 }

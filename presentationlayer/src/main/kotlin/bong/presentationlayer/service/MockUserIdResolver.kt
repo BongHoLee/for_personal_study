@@ -26,8 +26,8 @@ class MockUserIdResolver : UserIdResolver {
         "test@example.com" to UserId("user-003")
     )
 
-    override fun resolve(userIdentifier: UserIdentifier): UserId {
+    override fun resolve(userIdentifier: UserIdentifier, transactionId: String): UserId {
         return userMap[userIdentifier.value]
-            ?: throw UserNotFoundException(userIdentifier)
+            ?: throw UserNotFoundException(userIdentifier, transactionId)
     }
 }

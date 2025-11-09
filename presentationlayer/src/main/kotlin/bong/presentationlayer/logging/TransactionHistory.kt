@@ -44,7 +44,7 @@ class TransactionHistoryLogger {
                 serviceId = serviceId,
                 requestId = requestBody.requestId,
                 requestDateTime = requestBody.requestDateTime,
-                responseDateTime = responseBody.responseDateTime,
+                responseDateTime = responseBody.responseDateTime ?: "N/A",
                 statusCode = responseBody.statusCode,
                 userIdentifier = requestBody.userIdentifier.value
             )

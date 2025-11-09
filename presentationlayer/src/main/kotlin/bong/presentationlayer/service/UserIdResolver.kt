@@ -15,8 +15,9 @@ interface UserIdResolver {
      * UserIdentifier를 UserId로 변환
      *
      * @param userIdentifier 사용자 식별 정보
+     * @param transactionId API 트랜잭션 ID (에러 응답 시 사용)
      * @return UserId
      * @throws UserNotFoundException 매칭되는 사용자가 없을 경우
      */
-    fun resolve(userIdentifier: UserIdentifier): UserId
+    fun resolve(userIdentifier: UserIdentifier, transactionId: String): UserId
 }
