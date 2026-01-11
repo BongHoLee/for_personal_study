@@ -1,0 +1,36 @@
+services:
+  # Primary DB: Batch 메타데이터 + Customer 테이블
+  mysql-primary:
+    image: mysql:8.0
+    container_name: batch-demo-mysql-primary
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: batch_demo
+      MYSQL_USER: batch_user
+      MYSQL_PASSWORD: batch_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_primary_data:/var/lib/mysql
+      - ./src/main/resources/sql/primary:/docker-entrypoint-initdb.d
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # Secondary DB: New 테이블 (물리적으로 분리된 DB)
+  mysql-secondary:
+    image: mysql:8.0
+    container_name: batch-demo-mysql-secondary
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: new_db
+      MYSQL_USER: new_user
+      MYSQL_PASSWORD: new_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_secondary_data:/var/lib/mysql
+      - ./src/main/resources/sql/secondary:/docker-entrypoint-initdb.d
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  mysql_primary_data:
+  mysql_secondary_data:

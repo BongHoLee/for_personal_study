@@ -1,0 +1,8 @@
+type,firstName,lastName,email,age
+EXISTING,John,Doe,john.doe@email.com,28
+EXISTING,Jane,Smith,jane.smith@email.com,34
+NEW,Bob,Johnson,bob.johnson@email.com,45
+EXISTING,Alice,Williams,alice.williams@email.com,22
+EXISTING,Charlie,Brown,charlie.brown@email.com,17
+NEW,David,Lee,david.lee@email.com,55
+NEW,Emma,Wilson,emma.wilson@email.com,29

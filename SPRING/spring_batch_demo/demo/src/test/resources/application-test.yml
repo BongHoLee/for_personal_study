@@ -1,0 +1,23 @@
+spring:
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+
+  jpa:
+    show-sql: true
+
+# 테스트용 다중 데이터소스 (H2 인메모리)
+datasource:
+  primary:
+    jdbc-url: jdbc:h2:mem:primarydb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  secondary:
+    jdbc-url: jdbc:h2:mem:secondarydb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
