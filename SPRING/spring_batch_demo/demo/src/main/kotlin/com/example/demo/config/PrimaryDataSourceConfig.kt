@@ -1,5 +1,6 @@
 package com.example.demo.config
 
+import jakarta.persistence.EntityManagerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.context.annotation.Bean
@@ -39,6 +40,12 @@ class PrimaryDataSourceConfig(
         return DataSourceBuilder.create().build()
     }
 
+    /**
+     * EntityManagerFactory 빈
+     *
+     * LocalContainerEntityManagerFactoryBean은 FactoryBean이므로
+     * Spring이 EntityManagerFactory 타입으로 주입할 때 자동으로 .getObject()를 호출합니다.
+     */
     @Primary
     @Bean
     fun primaryEntityManagerFactory(primaryDataSource: DataSource): LocalContainerEntityManagerFactoryBean {
@@ -59,12 +66,17 @@ class PrimaryDataSourceConfig(
     }
 
     /**
-     * JPA용 트랜잭션 매니저 (Repository 작업용)
+     * JpaTransactionManager
+     *
+     * EntityManagerFactory 타입으로 주입받으면 Spring이 자동으로
+     * LocalContainerEntityManagerFactoryBean에서 EntityManagerFactory를 추출합니다.
      */
     @Primary
     @Bean
-    fun primaryTransactionManager(primaryEntityManagerFactory: LocalContainerEntityManagerFactoryBean): PlatformTransactionManager {
-        return JpaTransactionManager(primaryEntityManagerFactory.`object`!!)
+    fun primaryTransactionManager(
+        primaryEntityManagerFactory: EntityManagerFactory
+    ): PlatformTransactionManager {
+        return JpaTransactionManager(primaryEntityManagerFactory)
     }
 
     @Primary

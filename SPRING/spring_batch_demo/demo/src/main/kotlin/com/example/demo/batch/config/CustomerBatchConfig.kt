@@ -12,34 +12,33 @@ import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.launch.support.RunIdIncrementer
 import org.springframework.batch.core.repository.JobRepository
 import org.springframework.batch.core.step.builder.StepBuilder
-import org.springframework.batch.item.database.JdbcBatchItemWriter
+import org.springframework.batch.item.database.JpaItemWriter
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.DependsOn
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
- * Spring Batch Job/Step 설정 (Step 분리 + JdbcBatchItemWriter 방식)
+ * Spring Batch Job/Step 설정 (Step 분리 + JpaItemWriter 방식)
  *
  * CSV 파일에서 고객 데이터를 읽어 type에 따라 다른 DB에 저장합니다.
  *
  * ## 아키텍처 특징
- * - Step 분리: 각 Step이 자신의 TransactionManager 사용
- * - JdbcBatchItemWriter: JDBC 기반으로 트랜잭션 관리 단순화
- * - 배치 INSERT로 높은 성능
+ * - Step 분리: 각 Step이 자신의 JpaTransactionManager 사용
+ * - JpaItemWriter: JPA 엔티티를 직접 영속화
+ * - EntityManagerFactory와 TransactionManager가 올바르게 매핑되어야 함
  *
  * ## 흐름
  * Job: importCustomerJob
  *  ├── Step 1: existingCustomerStep (Primary DB)
  *  │    - Reader: CSV 읽기
  *  │    - Processor: EXISTING 타입만 필터링 + 변환
- *  │    - Writer: Primary DB에 JDBC로 저장
+ *  │    - Writer: Primary DB에 JPA로 저장
  *  │
  *  └── Step 2: newCustomerStep (Secondary DB)
  *       - Reader: CSV 읽기 (동일 파일 재읽기)
  *       - Processor: NEW 타입만 필터링 + 변환
- *       - Writer: Secondary DB에 JDBC로 저장
+ *       - Writer: Secondary DB에 JPA로 저장
  */
 @Configuration
 class CustomerBatchConfig(
@@ -64,17 +63,14 @@ class CustomerBatchConfig(
     /**
      * Step 1: EXISTING 타입 고객을 Primary DB에 저장
      *
-     * JdbcBatchItemWriter는 DataSource 기반으로 동작하며,
-     * Spring의 트랜잭션 관리와 자연스럽게 통합됩니다.
-     *
-     * @DependsOn: EntityManagerFactory가 먼저 초기화되어 DDL이 생성되도록 보장
+     * JpaItemWriter는 EntityManagerFactory 기반으로 동작하며,
+     * JpaTransactionManager와 함께 JPA 트랜잭션을 관리합니다.
      */
     @Bean
-    @DependsOn("primaryEntityManagerFactory")
     fun existingCustomerStep(
         jobRepository: JobRepository,
         @Qualifier("primaryTransactionManager") transactionManager: PlatformTransactionManager,
-        existingCustomerWriter: JdbcBatchItemWriter<Customer>
+        existingCustomerWriter: JpaItemWriter<Customer>
     ): Step {
         return StepBuilder("existingCustomerStep", jobRepository)
             .chunk<CustomerCsvRow, Customer>(10, transactionManager)
@@ -87,17 +83,14 @@ class CustomerBatchConfig(
     /**
      * Step 2: NEW 타입 고객을 Secondary DB에 저장
      *
-     * JdbcBatchItemWriter는 DataSource 기반으로 동작하며,
-     * Spring의 트랜잭션 관리와 자연스럽게 통합됩니다.
-     *
-     * @DependsOn: EntityManagerFactory가 먼저 초기화되어 DDL이 생성되도록 보장
+     * JpaItemWriter는 EntityManagerFactory 기반으로 동작하며,
+     * JpaTransactionManager와 함께 JPA 트랜잭션을 관리합니다.
      */
     @Bean
-    @DependsOn("secondaryEntityManagerFactory")
     fun newCustomerStep(
         jobRepository: JobRepository,
         @Qualifier("secondaryTransactionManager") transactionManager: PlatformTransactionManager,
-        newCustomerWriter: JdbcBatchItemWriter<NewCustomer>
+        newCustomerWriter: JpaItemWriter<NewCustomer>
     ): Step {
         return StepBuilder("newCustomerStep", jobRepository)
             .chunk<CustomerCsvRow, NewCustomer>(10, transactionManager)
